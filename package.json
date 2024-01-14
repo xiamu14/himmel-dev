@@ -1,0 +1,18 @@
+{
+  "name": "himmel-dev",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "ben",
+  "license": "ISC",
+  "dependencies": {
+    "parcel": "^2.11.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
