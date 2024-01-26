@@ -10,28 +10,6 @@ export function P(children?: HChildren<string>) {
   return node;
 }
 
-function render(container: HTMLElement, element: HNode<unknown> | undefined) {
-  if (!element) return;
-  const dom = document.createElement(element.type);
-  dom;
-  //  ... 处理其他 attr
-
-  container.appendChild(dom);
-  let children = element
-    ? !Array.isArray(element.children)
-      ? [element.children]
-      : element.children
-    : [];
-
-  children.forEach((child) => {
-    if (typeof child === "string") {
-      dom.innerText = child;
-    } else {
-      render(dom, child);
-    }
-  });
-}
-
 export const createRoot = (
   containerId: string,
   RootNode: () => HNode<unknown>
@@ -40,5 +18,5 @@ export const createRoot = (
   if (!containerElement) {
     throw new Error("no container, nothing render");
   }
-  render(containerElement, RootNode());
+  RootNode().createElement(containerElement);
 };
