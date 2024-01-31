@@ -10,13 +10,20 @@ export function P(children?: HChildren<string>) {
   return node;
 }
 
-export const createRoot = (
-  containerId: string,
-  RootNode: () => HNode<unknown>
-) => {
+// 特殊
+class RootNode extends HNode<unknown> {
+  constructor(container: HTMLElement) {
+    super();
+    this.element = container;
+    this.status = "mounted";
+    return this;
+  }
+}
+
+export const createRoot = (containerId: string, Main: () => HNode<unknown>) => {
   const containerElement = document.querySelector(containerId) as HTMLElement;
   if (!containerElement) {
     throw new Error("no container, nothing render");
   }
-  RootNode().createElement(containerElement);
+  Main().mount(new RootNode(containerElement));
 };

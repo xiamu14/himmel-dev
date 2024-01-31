@@ -1,73 +1,145 @@
 import { effectObserverObject } from "./signal";
+import { Attributes, GetNodeRef, HNodeStatus, NodeRef, Style } from "./types";
 
-export type HChildren<T> = string | HNode<T> | HNode<T>[];
+export function createNodeRef(): [{ node: NodeRef }, GetNodeRef] {
+  const obj: { node: NodeRef } = {
+    node: undefined,
+  };
+  return [
+    obj,
+    (ref: HTMLElement | undefined) => {
+      obj.node = ref;
+    },
+  ];
+}
+
+export type HChildren<T> = string | HNode<T> | HNode<T>[] | (() => string);
 export default class HNode<T> {
   type: string;
+  status: HNodeStatus = "idle";
   children: HChildren<T> | undefined;
   element: HTMLElement | undefined;
-  parentNode: HTMLElement | undefined;
-  attrHide: boolean = false;
-  attrClass: string = "";
+  parentNode: HNode<unknown> | undefined;
+  container: HTMLElement | undefined;
+  attributes: Attributes = {
+    hide: false,
+    class: "",
+    style: {},
+  };
+  getNodeRef?: GetNodeRef;
   constructor(children?: HChildren<T>) {
     this.type = "div";
     this.children = children;
   }
-  createElement(container: HTMLElement) {
-    const element = document.createElement(this.type);
-    this.parentNode = container;
-    this.element = element;
-    !this.attrHide && container.appendChild(element);
-    console.log("[aaa]", this.attrClass);
-    this.attrClass && this.element.classList.add(...this.attrClass.split(" "));
 
+  createElement() {
+    const element = document.createElement(this.type);
+    this.element = element;
+
+    // 处理 attributes
+    this.attributes.class &&
+      this.element.classList.add(...this.attributes.class.split(" "));
+
+    // 处理 style
+    Object.assign(this.element.style, this.attributes.style);
+    // TODO：处理 event handler
+    if (this.parentNode?.status === "mounted") {
+      this.parentNode.element?.appendChild(this.element!);
+      this.getNodeRef?.(this.element);
+      this.status = "mounted";
+    }
+  }
+
+  mount(parentNode: HNode<unknown>) {
+    this.parentNode = parentNode;
+    if (this.attributes.hide || this.parentNode.status !== "mounted") {
+      this.status = "unmounted";
+      return null;
+    }
+    this.createElement();
+    this.renderChildren();
+  }
+
+  renderChildren() {
     const children = !Array.isArray(this.children)
       ? [this.children]
       : this.children;
     for (const child of children) {
       if (child !== undefined) {
         if (typeof child === "string") {
-          element.innerText = child;
+          this.element!.innerText = child;
+        } else if (typeof child === "function") {
+          // 响应式
+          effectObserverObject.observer = () => {
+            if (this.element) {
+              this.element.innerText = child();
+            }
+          };
+          // 初始化
+          this.element!.innerText = child();
         } else {
-          (child as HNode<unknown>).createElement(element);
+          (child as HNode<unknown>).mount(this);
         }
       }
     }
   }
 
+  unmount() {
+    if (
+      this.parentNode?.status === "mounted" &&
+      this.element &&
+      this.status === "mounted"
+    ) {
+      this.parentNode.element!.removeChild(this.element);
+      this.status = "unmounted";
+      this.element = undefined;
+      this.getNodeRef?.(undefined);
+    }
+  }
+
+  remount() {
+    this.createElement();
+    this.renderChildren();
+  }
+
   className(val: string | (() => string)) {
     if (typeof val === "function") {
       effectObserverObject.observer = () => {
-        if (this.element) {
-          this.element.classList.add(...val().split(" "));
-        }
+        this.element?.classList.add(...val().split(" "));
       };
-      // DEBUG
-      this.attrClass = val();
+      this.attributes.class = val();
     } else {
-      this.attrClass = val;
+      this.attributes.class = val;
     }
     return this;
   }
-  style() {}
+  style(val: Style | (() => Style)) {
+    if (typeof val === "function") {
+      effectObserverObject.observer = () => {
+        this.element && Object.assign(this.element, val());
+      };
+      this.attributes.style = val();
+    } else {
+      this.attributes.style = val;
+    }
+    return this;
+  }
   as(type: string) {
     this.type = type;
+  }
+  ref(fn: GetNodeRef) {
+    this.getNodeRef = fn;
+    return this;
   }
   hide(val: boolean | (() => boolean)) {
     if (typeof val === "function") {
       effectObserverObject.observer = () => {
-        console.log("xxx", val, this.element, this.parentNode);
-        if (this.element && this.parentNode) {
-          val()
-            ? this.parentNode.removeChild(this.element)
-            : this.parentNode.appendChild(this.element);
-        }
+        val() ? this.remount() : this.unmount();
       };
-      // DEBUG
-      this.attrHide = val();
+      this.attributes.hide = val();
     } else {
-      this.attrHide = val;
+      this.attributes.hide = val;
     }
     return this;
   }
-  attr({ __dangerousHtml }: { __dangerousHtml?: string }) {}
 }
