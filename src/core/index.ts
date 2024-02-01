@@ -1,1 +1,2 @@
-export { createRoot, P, Div } from "./dom";
+export { createRoot } from "./dom";
+export { createNodeRef } from "./HNode";

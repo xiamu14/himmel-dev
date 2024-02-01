@@ -42,6 +42,9 @@ export default class HNode<T> {
 
     // 处理 style
     Object.assign(this.element.style, this.attributes.style);
+    // 处理 href
+    this.attributes.href &&
+      this.element.setAttribute("href", this.attributes.href);
     // TODO：处理 event handler
     // NOTE: create and append
     if (this.parentNode?.status === "mounted") {

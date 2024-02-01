@@ -1,6 +1,6 @@
 ```ts
 import { createRoot, Div, P } from "../core";
-import { signal, effect, compute, dispatch } from "../core/reactive";
+import { signal, effect, dispatch } from "../core/reactive";
 
 const count = signal(0);
 effect(() => {
@@ -20,3 +20,7 @@ function App() {
 }
 createRoot("#root", App);
 ```
+
+- [ ] support unocss
+- [ ] apply attribute
+- [ ] bind event; proxy event
