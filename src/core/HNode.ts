@@ -43,6 +43,7 @@ export default class HNode<T> {
     // 处理 style
     Object.assign(this.element.style, this.attributes.style);
     // TODO：处理 event handler
+    // NOTE: create and append
     if (this.parentNode?.status === "mounted") {
       this.parentNode.element?.appendChild(this.element!);
       this.getNodeRef?.(this.element);
