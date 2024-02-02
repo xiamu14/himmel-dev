@@ -21,6 +21,8 @@ function App() {
 createRoot("#root", App);
 ```
 
+- [ ] support async function
+- [ ] immutable data
 - [ ] support unocss
 - [ ] apply attribute
 - [ ] bind event; proxy event
