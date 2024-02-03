@@ -26,7 +26,7 @@ export function signal<T>(initValue: T) {
         target.prev = newValue;
       }
       if (prop === "val") {
-        console.log("xxxx", signalObject.subscribers);
+        // console.log("xxxx", signalObject.subscribers);
         // 比较方法
         // 触发所有的依赖更新
         target.val = newValue;
@@ -47,12 +47,14 @@ export function get<T>(signal: Signal<T>) {
 
 export function dispatch<T extends boolean | string | number | object>(
   signal: Signal<T>,
-  val: T | ((prev: T) => T)
+  val: T | ((prev: T) => T) | ((prev: T) => Promise<T>)
 ) {
   const prev = signal.val;
   const newVal = typeof val === "function" ? val(prev) : val;
-  signal.val = newVal;
-  signal.prev = prev;
+  Promise.resolve(newVal).then((it) => {
+    signal.val = it;
+    signal.prev = prev;
+  });
 }
 
 export function effect(fn: () => void) {

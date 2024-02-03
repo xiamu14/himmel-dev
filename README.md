@@ -1,28 +1,64 @@
 ```ts
-import { createRoot, Div, P } from "../core";
-import { signal, effect, dispatch } from "../core/reactive";
-
-const count = signal(0);
-effect(() => {
-  if (get(count) > 20) {
-    console.log("error");
-  }
-});
-
-function App() {
+import { createRoot, createNodeRef } from "../core";
+import { Div, Link, Text } from "../core/dom";
+import { dispatch, get, signal } from "../core/signal";
+import "./demo.css";
+const hideState = signal(true);
+const theme = signal("black");
+const name = signal("world");
+const [helloRef, getHelloRef] = createNodeRef();
+function Hello(name: string) {
   return Div([
-    P(`hello ${count()}`),
-    P(`world ${user().nickname}`),
-    Div().onClick(() => {
-      dispatch(count, (prev) => 12);
-    }),
+    Text("hello " + name)
+      .className(() => `text-blue ${get(theme)}`)
+      .style({
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+        padding: "12px",
+      })
+      .ref(getHelloRef),
+    Link("test").href("https://www.baidu.com"),
+    Div(
+      data.map((item) => {
+        return Div([P(item.nickname)]);
+      })
+    ),
   ]);
 }
+function App() {
+  return Div([Hello("你好"), Text(() => get(name) + "world")]);
+}
 createRoot("#root", App);
+
+setTimeout(() => {
+  dispatch(hideState, false);
+  dispatch(theme, () => "light");
+  console.log("height", helloRef.node?.clientHeight);
+}, 3000);
+
+setTimeout(() => {
+  dispatch(hideState, true);
+}, 5000);
+
+dispatch(name, async () => {
+  await sleep(3);
+  return "John";
+});
+
+function sleep(second: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve("");
+    }, second * 1000);
+  });
+}
 ```
 
-- [ ] support async function
-- [ ] immutable data
+- [x] support async function
+- [x] bind event; proxy event
+- [x] Image component
+- [ ] Modal component; Portal
 - [ ] support unocss
 - [ ] apply attribute
-- [ ] bind event; proxy event
+- [ ] immutable data

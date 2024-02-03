@@ -1,8 +1,15 @@
 import HNode, { HChildren } from "./HNode";
+import ImgNode from "./ImgNode";
 import LinkNode from "./LinkNode";
 
 export function Div(children?: HChildren<string>) {
   return new HNode(children);
+}
+
+export function Flex(children?: HChildren<string>) {
+  const node = new HNode(children);
+  node.style({ display: "flex" });
+  return node;
 }
 
 export function Text(children?: HChildren<string>) {
@@ -13,7 +20,12 @@ export function Text(children?: HChildren<string>) {
 
 export function Link(children?: string) {
   const node = new LinkNode(children);
-  console.log("test", node.type, node.element);
+  return node as Omit<LinkNode, "as">;
+}
+
+export function Img(src: string) {
+  const node = new ImgNode();
+  node.src(src);
   return node;
 }
 

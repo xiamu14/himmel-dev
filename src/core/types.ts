@@ -5,6 +5,7 @@ export type Attributes = {
   hide: boolean;
   style: Style;
   href?: string;
+  src?: string;
 };
 export type NodeRef = HTMLElement | undefined;
 export type GetNodeRef = (ref: HTMLElement | undefined) => void;

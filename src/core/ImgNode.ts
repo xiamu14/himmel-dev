@@ -1,19 +1,19 @@
 import HNode from "./HNode";
 import { effectObserverObject } from "./signal";
 
-export default class LinkNode extends HNode<string> {
-  constructor(children?: string) {
-    super(children);
-    this.type = "a";
+export default class ImgNode extends HNode<string> {
+  constructor() {
+    super();
+    this.type = "img";
   }
-  href(val: string | (() => string)) {
+  src(val: string | (() => string)) {
     if (typeof val === "function") {
       effectObserverObject.observer = () => {
-        this.element && this.element.setAttribute("href", val());
+        this.element && this.element.setAttribute("src", val());
       };
-      this.attributes.href = val();
+      this.attributes.src = val();
     } else {
-      this.attributes.href = val;
+      this.attributes.src = val;
     }
     return this;
   }

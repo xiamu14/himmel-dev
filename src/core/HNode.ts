@@ -26,6 +26,7 @@ export default class HNode<T> {
     class: "",
     style: {},
   };
+  events: Record<string, any> = {};
   getNodeRef?: GetNodeRef;
   constructor(children?: HChildren<T>) {
     this.type = "div";
@@ -44,8 +45,17 @@ export default class HNode<T> {
     Object.assign(this.element.style, this.attributes.style);
     // 处理 href
     this.attributes.href &&
+      this.type === "a" &&
       this.element.setAttribute("href", this.attributes.href);
-    // TODO：处理 event handler
+
+    // 处理 src
+    this.attributes.src &&
+      this.type === "img" &&
+      this.element.setAttribute("src", this.attributes.src);
+
+    if (this.events.click) {
+      this.element.onclick = this.events.click;
+    }
     // NOTE: create and append
     if (this.parentNode?.status === "mounted") {
       this.parentNode.element?.appendChild(this.element!);
@@ -144,6 +154,10 @@ export default class HNode<T> {
     } else {
       this.attributes.hide = val;
     }
+    return this;
+  }
+  onClick(handle: (event?: MouseEvent) => void) {
+    this.events.click = handle;
     return this;
   }
 }
