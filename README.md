@@ -7,6 +7,24 @@ const hideState = signal(true);
 const theme = signal("black");
 const name = signal("world");
 const [helloRef, getHelloRef] = createNodeRef();
+
+const [modalWrapperRef , getModalWrapperRef]...
+
+function ModalWrapper() {
+  return Div().ref(getModalWrapperRef).id('modal-wrapper')
+}
+
+function Modal(children:{
+  header: HNode<unknown>
+}) {
+  // return Portal().parent(modalWrapperRef)
+  return Portal(
+    Div([
+      children.header
+    ])
+  ).parent('#modal-wrapper')
+}
+
 function Hello(name: string) {
   return Div([
     Text("hello " + name)
@@ -59,6 +77,22 @@ function sleep(second: number) {
 - [x] bind event; proxy event
 - [x] Image component
 - [ ] Modal component; Portal
+- [ ] afterMount; beforeMount; beforeUnmount; afterUnmount;
 - [ ] support unocss
-- [ ] apply attribute
-- [ ] immutable data
+- [ ] use vite
+- [ ] animation method
+
+- [ ] full attribute
+- [ ] full event function
+- [ ] support svg （auto）
+
+- [ ] test case
+- [ ] benchmark
+
+- [ ] doc site
+
+- [ ] route
+- [ ] ui library
+- [ ] di-fetch with swr
+- [ ] headless ui library
+- [ ] starter template
