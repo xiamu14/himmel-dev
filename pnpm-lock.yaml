@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 devDependencies:
+  '@unocss/preset-uno':
+    specifier: ^0.58.5
+    version: 0.58.5
   typescript:
     specifier: ^5.3.3
     version: 5.3.3

@@ -84,7 +84,7 @@ function sleep(second: number) {
 - [x] Image component
 - [ ] Modal component; Portal
 - [ ] afterMount; beforeMount; beforeUnmount; afterUnmount;
-- [ ] support unocss
+- [x] support unocss
 - [x] use vite
 - [ ] animation method
 
@@ -102,3 +102,5 @@ function sleep(second: number) {
 - [ ] di-fetch with swr
 - [ ] headless ui library
 - [ ] starter template
+
+- [ ] ssr

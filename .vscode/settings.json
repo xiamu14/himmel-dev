@@ -1,0 +1,7 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "cSpell.words": ["Himmel"],
+  "unocss.include": ["src/**/*.ts"]
+}
