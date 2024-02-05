@@ -1,21 +1,16 @@
 import { createRoot, createNodeRef } from "../core";
-import { Div, Flex, Img, Link, Text } from "../core/dom";
+import { Div, Img, Link, Text } from "../core/dom";
 import { dispatch, get, signal } from "../core/signal";
 import "./demo.css";
+import "virtual:uno.css";
 const hideState = signal(true);
 const theme = signal("black");
 const name = signal("world");
 const [helloRef, getHelloRef] = createNodeRef();
 function Hello(name: string) {
-  return Flex([
+  return Div([
     Text("hello " + name)
-      .className(() => `text-blue ${get(theme)}`)
-      .style({
-        display: "flex",
-        justifyContent: "center",
-        width: "100%",
-        padding: "12px",
-      })
+      .className(() => `text-blue w-full flex justify-center ${get(theme)}`)
       .ref(getHelloRef),
     Link("test").href("https://www.baidu.com"),
     Img(

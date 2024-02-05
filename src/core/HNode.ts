@@ -118,7 +118,12 @@ export default class HNode<T> {
 
   className(val: string | (() => string)) {
     if (typeof val === "function") {
-      effectObserverObject.observer = () => {
+      effectObserverObject.observer = (old?: string) => {
+        if (old) {
+          [...old.split(" ")].forEach((it) => {
+            this.element?.classList.remove(it);
+          });
+        }
         this.element?.classList.add(...val().split(" "));
       };
       this.attributes.class = val();

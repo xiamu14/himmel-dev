@@ -73,13 +73,19 @@ function sleep(second: number) {
 }
 ```
 
+## Bug
+
+- [x] replace when the reactive value is updated.
+
+## Feature
+
 - [x] support async function
 - [x] bind event; proxy event
 - [x] Image component
 - [ ] Modal component; Portal
 - [ ] afterMount; beforeMount; beforeUnmount; afterUnmount;
 - [ ] support unocss
-- [ ] use vite
+- [x] use vite
 - [ ] animation method
 
 - [ ] full attribute

@@ -6,12 +6,6 @@ export function Div(children?: HChildren<string>) {
   return new HNode(children);
 }
 
-export function Flex(children?: HChildren<string>) {
-  const node = new HNode(children);
-  node.style({ display: "flex" });
-  return node;
-}
-
 export function Text(children?: HChildren<string>) {
   const node = new HNode(children);
   node.as("p");

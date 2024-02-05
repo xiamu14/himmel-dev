@@ -1,7 +1,7 @@
 type Signal<T> = {
   val: T;
   prev: T;
-  subscribers: Set<() => void>;
+  subscribers: Set<(old?: T) => void>;
 };
 
 export const effectObserverObject: { observer: (() => void) | undefined } = {
@@ -26,12 +26,14 @@ export function signal<T>(initValue: T) {
         target.prev = newValue;
       }
       if (prop === "val") {
+        const old = target.val;
         // console.log("xxxx", signalObject.subscribers);
         // 比较方法
         // 触发所有的依赖更新
         target.val = newValue;
         signalObject.subscribers.forEach((subscriber) => {
-          subscriber();
+          // TODO: need transport  prev value
+          subscriber(old);
         });
       }
       return true;
