@@ -1,6 +1,7 @@
 import { createNodeRef } from "../core";
 import { Div, Img, Link, Text } from "../core/dom";
 import { dispatch, get, signal } from "../core/signal";
+import TodoList from "./TodoList";
 import "./demo.css";
 
 const hideState = signal(true);
@@ -24,6 +25,7 @@ function Hello(name: string) {
       height: "200px",
       objectFit: "cover",
     }),
+    TodoList(),
   ])
     .className("flex flex-col justify-center items-center")
     .onClick(() => {

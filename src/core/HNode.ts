@@ -120,6 +120,11 @@ export default class HNode<T> {
     if (typeof val === "function") {
       effectObserverObject.observer = (old?: string) => {
         if (old) {
+          console.log(
+            "%c old",
+            "color:white;background: #18a0f1;padding:4px",
+            old
+          );
           [...old.split(" ")].forEach((it) => {
             this.element?.classList.remove(it);
           });

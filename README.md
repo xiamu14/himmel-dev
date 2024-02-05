@@ -82,8 +82,9 @@ function sleep(second: number) {
 - [x] support async function
 - [x] bind event; proxy event
 - [x] Image component
+- [ ] support array; List and Item component
 - [ ] Modal component; Portal
-- [ ] afterMount; beforeMount; beforeUnmount; afterUnmount;
+- [ ] onMount; onWillMount; onUnmount; onWillUnmount;
 - [x] support unocss
 - [x] use vite
 - [ ] animation method
