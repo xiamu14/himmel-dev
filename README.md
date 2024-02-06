@@ -38,10 +38,13 @@ function Hello(name: string) {
       .ref(getHelloRef),
     Link("test").href("https://www.baidu.com"),
     Div(
+    // FIXME: get(dataState) 会出错
       data.map((item) => {
         return Div([P(item.nickname)]);
       })
     ),
+    // TODO: 实现 diff 方法，细颗粒度更新 dom
+    List((item)=>Item(item)).get(todoListState).className().as().onClick(event=>{})
   ]);
 }
 function App() {
@@ -76,18 +79,20 @@ function sleep(second: number) {
 ## Bug
 
 - [x] replace when the reactive value is updated.
+- [ ] fix the bug caused by A and B not appearing in paris. (mention the default?)
 
 ## Feature
 
 - [x] support async function
 - [x] bind event; proxy event
 - [x] Image component
-- [ ] support array; List and Item component
-- [ ] Modal component; Portal
-- [ ] onMount; onWillMount; onUnmount; onWillUnmount;
 - [x] support unocss
 - [x] use vite
+- [ ] Element meta data; diff algorithm
+- [ ] support array; List and Item component
+- [ ] Modal component; Portal
 - [ ] animation method
+- [ ] onMount; onWillMount; onUnmount; onWillUnmount;
 
 - [ ] full attribute
 - [ ] full event function

@@ -19,8 +19,8 @@ export function signal<T>(initValue: T) {
     set(
       target: Signal<T>,
       prop: string | symbol,
-      newValue: T,
-      receiver: string
+      newValue: T
+      // receiver: string
     ) {
       if (prop === "prev") {
         target.prev = newValue;
