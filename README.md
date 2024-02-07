@@ -44,7 +44,11 @@ function Hello(name: string) {
       })
     ),
     // TODO: 实现 diff 方法，细颗粒度更新 dom
-    List((item)=>Item(item)).get(todoListState).className().as().onClick(event=>{})
+    List(()=> get(todoListState).(item)=>Item(item)).className().onClick(event=>{})
+    List(
+    ()=get(listState).map((item)=Item(item)
+    )
+    )
   ]);
 }
 function App() {
@@ -79,7 +83,7 @@ function sleep(second: number) {
 ## Bug
 
 - [x] replace when the reactive value is updated.
-- [ ] fix the bug caused by A and B not appearing in paris. (mention the default?)
+- [x] fix the bug caused by observer not clear.
 
 ## Feature
 

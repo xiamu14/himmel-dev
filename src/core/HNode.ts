@@ -72,6 +72,7 @@ export default class HNode<T> {
     }
     this.createElement();
     this.renderChildren();
+    return true;
   }
 
   renderChildren() {

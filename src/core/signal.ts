@@ -26,6 +26,7 @@ export function signal<T>(initValue: T) {
         target.prev = newValue;
       }
       if (prop === "val") {
+        console.log("target", target);
         const old = target.val;
         // console.log("xxxx", signalObject.subscribers);
         // 比较方法
@@ -43,6 +44,8 @@ export function signal<T>(initValue: T) {
 export function get<T>(signal: Signal<T>) {
   if (effectObserverObject.observer) {
     signal.subscribers.add(effectObserverObject.observer);
+    // TODO: 这样只实现了一个 state 的监听，如果是多个了清除 observer
+    effectObserverObject.observer = undefined;
   }
   return signal.val;
 }
@@ -63,6 +66,12 @@ export function effect(fn: () => void) {
   effectObserverObject.observer = fn;
   // 副作用函数立即执行
   fn();
+}
+
+export function compute<T>(fn: () => T) {
+  // TODO： 实现计算属性，包含多个 state 的组合值
+  const current = fn();
+  return signal(current);
 }
 
 // const count = signal("1");

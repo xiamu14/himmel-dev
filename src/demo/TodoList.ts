@@ -1,12 +1,13 @@
-import { List } from "../core/dom";
-import { dispatch, signal } from "../core/signal";
+import { Item, List } from "../core/dom";
+import { dispatch, get, signal } from "../core/signal";
 const todoListState = signal<string[]>([]);
 
 export default function TodoList() {
-  return List();
-  // get(todoListState).map((item) => {
-  //   return Item(item);
-  // })
+  return List(() =>
+    get(todoListState).map((item) => {
+      return Item(item);
+    })
+  );
 }
 
 setTimeout(() => {
