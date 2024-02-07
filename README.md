@@ -56,6 +56,10 @@ function App() {
 }
 createRoot("#root", App);
 
+const totalState = derive(() => get(incomeState) - get(expenseState)) ; // Derive; no dispatch
+
+get(totalState)
+
 setTimeout(() => {
   dispatch(hideState, false);
   dispatch(theme, () => "light");
@@ -92,14 +96,17 @@ function sleep(second: number) {
 - [x] Image component
 - [x] support unocss
 - [x] use vite
-- [ ] Element meta data; diff algorithm
-- [ ] support array; List and Item component
-- [ ] Modal component; Portal
+- [x] support array; List and Item component
+- [ ] derive and listen multiple signal (⭐️⭐️⭐️)
+
+- [ ] Element meta data; diff algorithm (⭐️⭐️⭐️)
+
 - [ ] animation method
 - [ ] onMount; onWillMount; onUnmount; onWillUnmount;
-
+- [ ] Modal component; Portal
+- [ ] full signal value type (bigint, null, undefined, NaN, Set, Map...)
 - [ ] full attribute
-- [ ] full event function
+- [ ] full event function (proxy event)
 - [ ] support svg （auto）
 
 - [ ] test case
