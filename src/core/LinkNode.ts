@@ -1,7 +1,7 @@
 import HNode from "./HNode";
 import { observerHelper } from "./signal";
 
-export default class LinkNode extends HNode<string> {
+export default class LinkNode extends HNode<string, HTMLLinkElement> {
   constructor(children?: string) {
     super(children);
     this.type = "a";
@@ -17,11 +17,11 @@ export default class LinkNode extends HNode<string> {
           this.element && this.element.setAttribute("href", val());
         },
         () => {
-          this.attributes.href = val();
+          this.attributes.simpleAttrs.href = val();
         }
       );
     } else {
-      this.attributes.href = val;
+      this.attributes.simpleAttrs.href = val;
     }
     return this;
   }

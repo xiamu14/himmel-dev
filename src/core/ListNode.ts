@@ -1,6 +1,6 @@
 import HNode, { HChildren } from "./HNode";
 
-export default class ListNode extends HNode<string> {
+export default class ListNode extends HNode<string, HTMLUListElement> {
   constructor(children?: HChildren<unknown>) {
     super(children);
     this.type = "ul";

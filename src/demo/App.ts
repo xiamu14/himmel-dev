@@ -11,7 +11,10 @@ const [helloRef, getHelloRef] = createNodeRef();
 
 function Hello(name: string) {
   return Div([
-    Link("Baidu").href("https://www.baidu.com").className("mb-2"),
+    Link("Baidu")
+      .href("https://www.baidu.com")
+      .className("mb-2")
+      .attrs({ target: "_blank" }),
     Text("hello " + name)
       .className(
         () =>
@@ -48,7 +51,8 @@ function Hello(name: string) {
           "",
           helloRef
         );
-      }),
+      })
+      .attrs({ contentEditable: true }),
 
     Img(
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKcUURmHtvXIKSfWXWCCvzPJvT30o5nsV7xZJSvBDqHw&s"

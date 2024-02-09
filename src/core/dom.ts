@@ -8,21 +8,12 @@ export function Div(children?: HChildren<string>) {
   return new HNode(children);
 }
 
-export function List<T>(children?: HNode<T>[] | (() => HNode<T>[])) {
+export function List<T>(
+  children?: HNode<T, HTMLElement>[] | (() => HNode<T, HTMLElement>[])
+) {
   let node: ListNode;
 
   if (typeof children === "function") {
-    // observerHelper.observer = () => {
-    //   console.log("%c [test]", "color:white;background: #18a0f1;padding:4px");
-    //   node.children = children();
-    //   // TODO: optimize diff
-    //   if (node.element && node.status === "mounted") {
-    //     node.element!.innerHTML = "";
-    //     node.renderChildren();
-    //   }
-    // };
-    // node = new ListNode(children());
-
     node = observerHelper.bind(
       () => {
         console.log("%c [test]", "color:white;background: #18a0f1;padding:4px");
@@ -68,7 +59,7 @@ export function Img(src: string) {
 }
 
 // 特殊
-class RootNode extends HNode<unknown> {
+class RootNode extends HNode<unknown, HTMLElement> {
   constructor(container: HTMLElement) {
     super();
     this.element = container;
@@ -77,7 +68,10 @@ class RootNode extends HNode<unknown> {
   }
 }
 
-export const createRoot = (containerId: string, Main: () => HNode<unknown>) => {
+export const createRoot = (
+  containerId: string,
+  Main: () => HNode<unknown, HTMLElement>
+) => {
   const containerElement = document.querySelector(containerId) as HTMLElement;
   if (!containerElement) {
     throw new Error("no container, nothing render");

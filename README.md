@@ -99,23 +99,24 @@ function sleep(second: number) {
 
 - [ ] Element meta data; diff algorithm (⭐️⭐️⭐️) [v1 refactor plan: HNode]
 - [ ] animation method
-- [ ] signal patch update
+- [ ] signal patch update ?
 
-- [ ] full signal value type (bigint, null, undefined, NaN, Set, Map...)
-- [ ] full attribute
-- [ ] full event function (proxy event)
-- [ ] Modal component; Portal
+- [x] full attribute
+- [x] full event function (proxy event)
+- [ ] Portal
 - [ ] support svg （auto）
 
 - [ ] test case
 - [ ] benchmark
 
 - [ ] doc site
-
 - [ ] route
-- [ ] ui library
 - [ ] di-fetch with swr
-- [ ] headless ui library
 - [ ] starter template
+
+- [ ] ui library
+
+  - [ ] Modal component;
+  - [ ] Input component;
 
 - [ ] ssr
