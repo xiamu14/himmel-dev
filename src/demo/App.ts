@@ -11,13 +11,45 @@ const [helloRef, getHelloRef] = createNodeRef();
 
 function Hello(name: string) {
   return Div([
+    Link("Baidu").href("https://www.baidu.com").className("mb-2"),
     Text("hello " + name)
       .className(
         () =>
           `text-blue p-20px font-bold text-xl flex justify-center ${get(theme)}`
       )
-      .ref(getHelloRef),
-    Link("Baidu").href("https://www.baidu.com").className("mb-2"),
+      .ref(getHelloRef)
+      .hide(() => get(hideState))
+      .onWillMount(() => {
+        console.log(
+          "%c willMount",
+          "color:white;background: #18a0f1;padding:4px",
+          "",
+          helloRef
+        );
+      })
+      .onMount(() => {
+        console.log(
+          "%c mount",
+          "color:white;background: #18a0f1;padding:4px",
+          helloRef
+        );
+      })
+      .onWillUnmount(() => {
+        console.log(
+          "%c willUnmount",
+          "color:white;background: #18a0f1;padding:4px",
+          helloRef
+        );
+      })
+      .onUnmount(() => {
+        console.log(
+          "%c unmount",
+          "color:white;background: #18a0f1;padding:4px",
+          "",
+          helloRef
+        );
+      }),
+
     Img(
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKcUURmHtvXIKSfWXWCCvzPJvT30o5nsV7xZJSvBDqHw&s"
     ).style({
@@ -40,12 +72,7 @@ export default function App() {
 setTimeout(() => {
   dispatch(hideState, false);
   dispatch(theme, () => "light");
-  console.log("height", helloRef.node?.clientHeight);
 }, 3000);
-
-setTimeout(() => {
-  dispatch(hideState, true);
-}, 5000);
 
 dispatch(name, async () => {
   await sleep(3);

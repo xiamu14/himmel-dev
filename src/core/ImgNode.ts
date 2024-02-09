@@ -1,5 +1,5 @@
 import HNode from "./HNode";
-import { effectObserverObject } from "./signal";
+import { observerHelper } from "./signal";
 
 export default class ImgNode extends HNode<string> {
   constructor() {
@@ -8,10 +8,18 @@ export default class ImgNode extends HNode<string> {
   }
   src(val: string | (() => string)) {
     if (typeof val === "function") {
-      effectObserverObject.observer = () => {
-        this.element && this.element.setAttribute("src", val());
-      };
-      this.attributes.src = val();
+      // observerHelper.observer = () => {
+      //   this.element && this.element.setAttribute("src", val());
+      // };
+      // this.attributes.src = val();
+      observerHelper.bind(
+        () => {
+          this.element && this.element.setAttribute("src", val());
+        },
+        () => {
+          this.attributes.src = val();
+        }
+      );
     } else {
       this.attributes.src = val;
     }

@@ -44,11 +44,7 @@ function Hello(name: string) {
       })
     ),
     // TODO: 实现 diff 方法，细颗粒度更新 dom
-    List(()=> get(todoListState).(item)=>Item(item)).className().onClick(event=>{})
-    List(
-    ()=get(listState).map((item)=Item(item)
-    )
-    )
+    List(()=> get(todoListState).(item)=>Item(item)).className()
   ]);
 }
 function App() {
@@ -97,16 +93,18 @@ function sleep(second: number) {
 - [x] support unocss
 - [x] use vite
 - [x] support array; List and Item component
-- [ ] derive and listen multiple signal (⭐️⭐️⭐️)
+- [x] derive and listen multiple signal (⭐️⭐️⭐️)
 
-- [ ] Element meta data; diff algorithm (⭐️⭐️⭐️)
+- [x] onMount; onWillMount; onUnmount; onWillUnmount;
 
+- [ ] Element meta data; diff algorithm (⭐️⭐️⭐️) [v1 refactor plan: HNode]
 - [ ] animation method
-- [ ] onMount; onWillMount; onUnmount; onWillUnmount;
-- [ ] Modal component; Portal
+- [ ] signal patch update
+
 - [ ] full signal value type (bigint, null, undefined, NaN, Set, Map...)
 - [ ] full attribute
 - [ ] full event function (proxy event)
+- [ ] Modal component; Portal
 - [ ] support svg （auto）
 
 - [ ] test case

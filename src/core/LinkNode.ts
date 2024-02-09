@@ -1,5 +1,5 @@
 import HNode from "./HNode";
-import { effectObserverObject } from "./signal";
+import { observerHelper } from "./signal";
 
 export default class LinkNode extends HNode<string> {
   constructor(children?: string) {
@@ -8,10 +8,18 @@ export default class LinkNode extends HNode<string> {
   }
   href(val: string | (() => string)) {
     if (typeof val === "function") {
-      effectObserverObject.observer = () => {
-        this.element && this.element.setAttribute("href", val());
-      };
-      this.attributes.href = val();
+      // observerHelper.observer = () => {
+      //   this.element && this.element.setAttribute("href", val());
+      // };
+      // this.attributes.href = val();
+      observerHelper.bind(
+        () => {
+          this.element && this.element.setAttribute("href", val());
+        },
+        () => {
+          this.attributes.href = val();
+        }
+      );
     } else {
       this.attributes.href = val;
     }

@@ -1,5 +1,12 @@
-import { effectObserverObject } from "./signal";
-import { Attributes, GetNodeRef, HNodeStatus, NodeRef, Style } from "./types";
+import { observerHelper } from "./signal";
+import {
+  Attributes,
+  GetNodeRef,
+  HNodeStatus,
+  Hooks,
+  NodeRef,
+  Style,
+} from "./types";
 
 export function createNodeRef(): [{ node: NodeRef }, GetNodeRef] {
   const obj: { node: NodeRef } = {
@@ -20,12 +27,14 @@ export default class HNode<T> {
   children: HChildren<T> | undefined;
   element: HTMLElement | undefined;
   parentNode: HNode<unknown> | undefined;
+  index: number | undefined = undefined;
   container: HTMLElement | undefined;
   attributes: Attributes = {
     hide: false,
     class: "",
     style: {},
   };
+  hooks: Hooks = {};
   events: Record<string, any> = {};
   getNodeRef?: GetNodeRef;
   constructor(children?: HChildren<T>) {
@@ -33,7 +42,7 @@ export default class HNode<T> {
     this.children = children;
   }
 
-  createElement() {
+  createElement(period: "mount" | "remount") {
     const element = document.createElement(this.type);
     this.element = element;
 
@@ -58,19 +67,37 @@ export default class HNode<T> {
     }
     // NOTE: create and append
     if (this.parentNode?.status === "mounted") {
-      this.parentNode.element?.appendChild(this.element!);
+      this.hooks?.onWillMount?.();
+
+      console.log("index0", this.index, period);
+      if (!(typeof this.index === "number")) {
+        this.parentNode.element!.appendChild(this.element!);
+      } else {
+        const childNodes = this.parentNode.element!.childNodes;
+        const preNode = childNodes[this.index];
+        console.log("preNode", preNode);
+        this.parentNode.element!.insertBefore(this.element, preNode);
+      }
+      console.log("index1", this.index, period);
       this.getNodeRef?.(this.element);
       this.status = "mounted";
+      this.hooks?.onMount?.();
     }
   }
 
   mount(parentNode: HNode<unknown>) {
     this.parentNode = parentNode;
+    // TODO:NOTE: try to record the index
+    if (this.parentNode.status === "mounted") {
+      const childNodes = this.parentNode.element!.childNodes;
+      this.index = childNodes.length ?? 0;
+    }
     if (this.attributes.hide || this.parentNode.status !== "mounted") {
       this.status = "unmounted";
       return null;
     }
-    this.createElement();
+
+    this.createElement("mount");
     this.renderChildren();
     return true;
   }
@@ -85,13 +112,24 @@ export default class HNode<T> {
           this.element!.innerText = child;
         } else if (typeof child === "function") {
           // 响应式
-          effectObserverObject.observer = () => {
-            if (this.element) {
-              this.element.innerText = child();
+          // observerHelper.observer = () => {
+          //   if (this.element) {
+          //     this.element.innerText = child();
+          //   }
+          // };
+          // // 初始化
+          // this.element!.innerText = child();
+          observerHelper.bind(
+            () => {
+              if (this.element) {
+                this.element.innerText = child();
+              }
+            },
+            () => {
+              // 初始化
+              this.element!.innerText = child();
             }
-          };
-          // 初始化
-          this.element!.innerText = child();
+          );
         } else {
           (child as HNode<unknown>).mount(this);
         }
@@ -100,39 +138,60 @@ export default class HNode<T> {
   }
 
   unmount() {
+    console.log(
+      "%c status",
+      "color:white;background: #18a0f1;padding:4px",
+      this
+    );
     if (
       this.parentNode?.status === "mounted" &&
       this.element &&
       this.status === "mounted"
     ) {
+      this.hooks?.onWillUnmount?.();
       this.parentNode.element!.removeChild(this.element);
       this.status = "unmounted";
       this.element = undefined;
       this.getNodeRef?.(undefined);
+      this.hooks?.onUnmount?.();
     }
   }
 
   remount() {
-    this.createElement();
+    //TODO: need remember the path on dom tree
+    this.createElement("remount");
     this.renderChildren();
   }
 
   className(val: string | (() => string)) {
     if (typeof val === "function") {
-      effectObserverObject.observer = (old?: string) => {
-        if (old) {
-          console.log(
-            "%c old",
-            "color:white;background: #18a0f1;padding:4px",
-            old
-          );
-          [...old.split(" ")].forEach((it) => {
-            this.element?.classList.remove(it);
-          });
+      // observerHelper.observer = (old?: string) => {
+      //   if (old) {
+      //     console.log(
+      //       "%c old",
+      //       "color:white;background: #18a0f1;padding:4px",
+      //       old
+      //     );
+      //     [...old.split(" ")].forEach((it) => {
+      //       this.element?.classList.remove(it);
+      //     });
+      //   }
+      //   this.element?.classList.add(...val().split(" "));
+      // };
+      // this.attributes.class = val();
+      observerHelper.bind(
+        (old?: string) => {
+          if (old) {
+            [...old.split(" ")].forEach((it) => {
+              this.element?.classList.remove(it);
+            });
+          }
+          this.element?.classList.add(...val().split(" "));
+        },
+        () => {
+          this.attributes.class = val();
         }
-        this.element?.classList.add(...val().split(" "));
-      };
-      this.attributes.class = val();
+      );
     } else {
       this.attributes.class = val;
     }
@@ -140,10 +199,18 @@ export default class HNode<T> {
   }
   style(val: Style | (() => Style)) {
     if (typeof val === "function") {
-      effectObserverObject.observer = () => {
-        this.element && Object.assign(this.element, val());
-      };
-      this.attributes.style = val();
+      // observerHelper.observer = () => {
+      //   this.element && Object.assign(this.element, val());
+      // };
+      // this.attributes.style = val();
+      observerHelper.bind(
+        () => {
+          this.element && Object.assign(this.element, val());
+        },
+        () => {
+          this.attributes.style = val();
+        }
+      );
     } else {
       this.attributes.style = val;
     }
@@ -158,10 +225,18 @@ export default class HNode<T> {
   }
   hide(val: boolean | (() => boolean)) {
     if (typeof val === "function") {
-      effectObserverObject.observer = () => {
-        val() ? this.remount() : this.unmount();
-      };
-      this.attributes.hide = val();
+      // observerHelper.observer = () => {
+      //   val() ? this.remount() : this.unmount();
+      // };
+      // this.attributes.hide = val();
+      observerHelper.bind(
+        () => {
+          val() ? this.unmount() : this.remount();
+        },
+        () => {
+          this.attributes.hide = val();
+        }
+      );
     } else {
       this.attributes.hide = val;
     }
@@ -169,6 +244,22 @@ export default class HNode<T> {
   }
   onClick(handle: (event?: MouseEvent) => void) {
     this.events.click = handle;
+    return this;
+  }
+  onWillMount(fn: () => void) {
+    this.hooks.onWillMount = fn;
+    return this;
+  }
+  onMount(fn: () => void) {
+    this.hooks.onMount = fn;
+    return this;
+  }
+  onUnmount(fn: () => void) {
+    this.hooks.onUnmount = fn;
+    return this;
+  }
+  onWillUnmount(fn: () => void) {
+    this.hooks.onWillUnmount = fn;
     return this;
   }
 }

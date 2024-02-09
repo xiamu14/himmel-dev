@@ -2,36 +2,56 @@ type Signal<T> = {
   val: T;
   prev: T;
   subscribers: Set<(old?: T) => void>;
-  writeable?: boolean; // writable by dispatch function
+  deriveKey?: Symbol;
 };
+type Observer = (() => void) | undefined;
 
-export const effectObserverObject: { observer: (() => void) | undefined } = {
-  observer: undefined,
-};
+class ObserverHelper {
+  _observer: Observer;
+  public get observer() {
+    return this._observer;
+  }
 
-export function signal<T>(initValue: T, options?: { writable: boolean }) {
+  public set observer(observer: Observer) {
+    this._observer = observer;
+  }
+
+  public clear() {
+    this._observer = undefined;
+  }
+
+  public bind<T>(observer: () => void, executor: () => T): T {
+    this._observer = observer;
+    const result = executor();
+    this.clear;
+    return result;
+  }
+}
+
+export const observerHelper = new ObserverHelper();
+
+export function signal<T>(initValue: T) {
   const signalObject: Signal<T> = {
     val: initValue,
     prev: initValue,
     subscribers: new Set(),
-    writeable: options?.writable ?? true,
   };
   // 依赖收集
   return new Proxy(signalObject, {
     set(
       target: Signal<T>,
       prop: string | symbol,
-      newValue: T
+      newValue: any
       // receiver: string
     ) {
       if (prop === "prev") {
         target.prev = newValue;
       }
-      if (prop === "writable") {
-        target.writeable = Boolean(newValue);
+      if (prop === "deriveKey") {
+        target.deriveKey = newValue;
       }
       if (prop === "val") {
-        console.log("target", target);
+        // console.log("target", target);
         const old = target.val;
         // console.log("xxxx", signalObject.subscribers);
         // 比较方法
@@ -47,19 +67,19 @@ export function signal<T>(initValue: T, options?: { writable: boolean }) {
   });
 }
 export function get<T>(signal: Signal<T>) {
-  if (effectObserverObject.observer) {
-    signal.subscribers.add(effectObserverObject.observer);
-    // TODO: something
-    effectObserverObject.observer = undefined;
+  if (observerHelper.observer) {
+    signal.subscribers.add(observerHelper.observer);
   }
   return signal.val;
 }
 
 export function dispatch<T extends boolean | string | number | object>(
   signal: Signal<T>,
-  val: T | ((prev: T) => T) | ((prev: T) => Promise<T>)
+  val: T | ((prev: T) => T) | ((prev: T) => Promise<T>),
+  deriveKey?: Symbol
 ) {
-  if (signal.writeable) {
+  // console.log(deriveKey, signal);
+  if (!deriveKey || (deriveKey && signal.deriveKey === deriveKey)) {
     const prev = signal.val;
     const newVal = typeof val === "function" ? val(prev) : val;
     Promise.resolve(newVal).then((it) => {
@@ -67,38 +87,54 @@ export function dispatch<T extends boolean | string | number | object>(
       signal.prev = prev;
     });
   } else {
-    console.warn("can't use the dispatch function to modify a derived signal");
+    console.error("can't use the dispatch function to modify a derived signal");
   }
 }
 
 export function effect(fn: () => void | Promise<void>) {
-  effectObserverObject.observer = fn;
+  observerHelper.observer = fn;
   // 副作用函数立即执行
   Promise.resolve(fn()).then(() => {
-    // 监听设置完成以后要清除
-    effectObserverObject.observer = undefined;
+    observerHelper.clear();
   });
 }
 
 export function derive<T extends boolean | string | number | object>(
   fn: () => T
 ) {
-  effectObserverObject.observer = () => {
-    derivedSignal.writeable = true;
-    dispatch<T>(derivedSignal, fn);
-    derivedSignal.writeable = false;
-  };
-  // 实现计算属性，包含多个 state 的组合值
-  const derivedSignal = signal(fn());
+  const deriveKey = Symbol("deriveKey");
+  const derivedSignal = observerHelper.bind(
+    () => {
+      dispatch<T>(derivedSignal, fn, deriveKey);
+    },
+    () => {
+      // 实现计算属性，包含多个 state 的组合值
+      const newDerivedSignal = signal(fn());
+      newDerivedSignal.deriveKey = deriveKey;
+      return newDerivedSignal;
+    }
+  );
 
   return derivedSignal;
 }
 
-const count = signal(1);
-const big = derive(() => get(count) * 100);
+// TEST CASE
 
-effect(() => {
-  console.log("effect", get(big));
-});
+// const count = signal(1);
+// const big = derive(() => get(count) * 100);
 
-dispatch(count, (prev) => prev + 1);
+// const user = signal({ name: "stupid" });
+
+// effect(() => {
+//   console.log("effect0", get(big));
+//   console.log("effect1", get(user).name);
+// });
+
+// dispatch(count, (prev) => prev + 1); // TODO: 完善类型 when we need a eslint
+// setTimeout(() => {
+//   dispatch(user, { name: "smart" });
+// }, 1000);
+
+// effect(() => {
+//   console.log("effect3", get(user).name);
+// });

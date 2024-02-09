@@ -2,7 +2,7 @@ import HNode, { HChildren } from "./HNode";
 import ImgNode from "./ImgNode";
 import LinkNode from "./LinkNode";
 import ListNode from "./ListNode";
-import { effectObserverObject } from "./signal";
+import { observerHelper } from "./signal";
 
 export function Div(children?: HChildren<string>) {
   return new HNode(children);
@@ -12,16 +12,31 @@ export function List<T>(children?: HNode<T>[] | (() => HNode<T>[])) {
   let node: ListNode;
 
   if (typeof children === "function") {
-    effectObserverObject.observer = () => {
-      console.log("%c [test]", "color:white;background: #18a0f1;padding:4px");
-      node.children = children();
-      // TODO: optimize diff
-      if (node.element && node.status === "mounted") {
-        node.element!.innerHTML = "";
-        node.renderChildren();
+    // observerHelper.observer = () => {
+    //   console.log("%c [test]", "color:white;background: #18a0f1;padding:4px");
+    //   node.children = children();
+    //   // TODO: optimize diff
+    //   if (node.element && node.status === "mounted") {
+    //     node.element!.innerHTML = "";
+    //     node.renderChildren();
+    //   }
+    // };
+    // node = new ListNode(children());
+
+    node = observerHelper.bind(
+      () => {
+        console.log("%c [test]", "color:white;background: #18a0f1;padding:4px");
+        node.children = children();
+        // TODO: optimize diff
+        if (node.element && node.status === "mounted") {
+          node.element!.innerHTML = "";
+          node.renderChildren();
+        }
+      },
+      () => {
+        return new ListNode(children());
       }
-    };
-    node = new ListNode(children());
+    );
   } else {
     node = new ListNode(children);
   }

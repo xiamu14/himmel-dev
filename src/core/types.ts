@@ -9,3 +9,9 @@ export type Attributes = {
 };
 export type NodeRef = HTMLElement | undefined;
 export type GetNodeRef = (ref: HTMLElement | undefined) => void;
+export type Hooks = {
+  onMount?: () => void;
+  onWillMount?: () => void;
+  onUnmount?: () => void;
+  onWillUnmount?: () => void;
+};
