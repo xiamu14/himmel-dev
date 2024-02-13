@@ -6,6 +6,7 @@ import "./demo.css";
 const hideState = signal(true);
 const theme = signal("black");
 const name = signal("world");
+
 const [helloRef, getHelloRef] = createNodeRef();
 
 const [modalWrapperRef , getModalWrapperRef]...

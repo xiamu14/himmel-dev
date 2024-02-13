@@ -16,7 +16,7 @@ export function List<T>(
   if (typeof children === "function") {
     node = observerHelper.bind(
       () => {
-        console.log("%c [test]", "color:white;background: #18a0f1;padding:4px");
+        // TODO: diff children for reduce operation
         node.children = children();
         // TODO: optimize diff
         if (node.element && node.status === "mounted") {

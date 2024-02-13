@@ -73,6 +73,13 @@ export function get<T>(signal: Signal<T>) {
   return signal.val;
 }
 
+/**
+ * TODO: make sure immutable data
+ * @param signal
+ * @param val
+ * @param deriveKey
+ */
+
 export function dispatch<T extends boolean | string | number | object>(
   signal: Signal<T>,
   val: T | ((prev: T) => T) | ((prev: T) => Promise<T>),

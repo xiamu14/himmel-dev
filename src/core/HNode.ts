@@ -25,9 +25,10 @@ export function createNodeRef(): [{ node: NodeRef }, GetNodeRef] {
 export type HChildren<T> =
   | string
   | number
+  | boolean
   | HNode<T, HTMLElement>
   | HNode<T, HTMLElement>[]
-  | (() => string | number);
+  | (() => string | number | boolean);
 export default class HNode<T, Element extends HTMLElement> {
   type: string;
   status: HNodeStatus = "idle";
@@ -58,7 +59,7 @@ export default class HNode<T, Element extends HTMLElement> {
   }
 
   createElement(period: "mount" | "remount") {
-    debug(this._dev)(period);
+    debug(period);
     const element = document.createElement(this.type) as Element;
     this.element = element;
 
@@ -117,9 +118,7 @@ export default class HNode<T, Element extends HTMLElement> {
       : this.children;
     for (const child of children) {
       if (child !== undefined) {
-        if (typeof child === "string") {
-          this.element!.innerText = child;
-        } else if (typeof child === "function") {
+        if (typeof child === "function") {
           // 响应式
           observerHelper.bind(
             () => {
@@ -132,8 +131,10 @@ export default class HNode<T, Element extends HTMLElement> {
               this.element!.innerText = String(child());
             }
           );
-        } else {
+        } else if (child instanceof HNode) {
           (child as HNode<unknown, Element>).mount(this);
+        } else {
+          this.element!.innerText = String(child);
         }
       }
     }
