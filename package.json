@@ -12,9 +12,13 @@
   "author": "ben",
   "license": "ISC",
   "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.9",
     "@unocss/preset-uno": "^0.58.5",
     "typescript": "^5.3.3",
     "unocss": "^0.58.5",
     "vite": "^5.0.12"
+  },
+  "dependencies": {
+    "lodash.clonedeep": "^4.5.0"
   }
 }

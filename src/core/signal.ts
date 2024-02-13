@@ -1,3 +1,5 @@
+import cloneDeep from "lodash.clonedeep";
+
 type Signal<T> = {
   val: T;
   prev: T;
@@ -87,7 +89,8 @@ export function dispatch<T extends boolean | string | number | object>(
 ) {
   // console.log(deriveKey, signal);
   if (!deriveKey || (deriveKey && signal.deriveKey === deriveKey)) {
-    const prev = signal.val;
+    // TODO:使用深度拷贝
+    const prev = cloneDeep(signal.val);
     const newVal = typeof val === "function" ? val(prev) : val;
     Promise.resolve(newVal).then((it) => {
       signal.val = it;
@@ -124,6 +127,8 @@ export function derive<T extends boolean | string | number | object>(
 
   return derivedSignal;
 }
+
+// NOTE: 需要配合 immutable 类库实现
 
 // TEST CASE
 
