@@ -1,3 +1,5 @@
+import { diff } from "fast-array-diff";
+
 import { observerHelper } from "./signal";
 import {
   Attributes,
@@ -23,13 +25,22 @@ export function createNodeRef(): [{ node: NodeRef }, GetNodeRef] {
   ];
 }
 
+export type ListChildrenBuilder<
+  Item extends unknown,
+  Element extends HTMLElement,
+  H
+> = {
+  data: () => Item[];
+  key: (item: Item, index: number) => UniqueId;
+  item: (item: Item, index: number) => HNode<H, Element>;
+};
+
 export type HChildren<T> =
   | string
   | number
-  | boolean
   | HNode<T, HTMLElement>
   | HNode<T, HTMLElement>[]
-  | (() => string | number | boolean);
+  | (() => string | number);
 
 export type ListChild<T, E extends HTMLElement> = string | number | HNode<T, E>;
 
@@ -39,7 +50,7 @@ export default class HNode<T, Element extends HTMLElement> {
   children: HChildren<T> | undefined;
   element: Element | undefined;
   parentNode: HNode<unknown, HTMLElement> | undefined;
-  index: number | undefined = undefined;
+  index: number | undefined = undefined; // 当前 Node 在父组件里的位置
   container: HTMLElement | undefined;
   attributes: Attributes = {
     hide: false,
@@ -49,17 +60,21 @@ export default class HNode<T, Element extends HTMLElement> {
   };
   hooks: Hooks = {};
   events: Record<string, any> = {};
-  _key = uniqueId();
+  private _key = uniqueId();
+  private _prevPatchDataSource: unknown[] = [];
+  private _prevPatchChildren: HNode<T, Element>[] = [];
+  _builder: ListChildrenBuilder<any, Element, T> | undefined;
   getNodeRef?: GetNodeRef;
 
-  _dev?: boolean = false;
+  private _dev?: boolean = false;
 
   public dev() {
     this._dev = true;
+    return this;
   }
 
-  public key(newKey: UniqueId) {
-    this._key = newKey;
+  public build<Item>(builder: ListChildrenBuilder<Item, Element, T>) {
+    this._builder = builder;
     return this;
   }
 
@@ -73,7 +88,7 @@ export default class HNode<T, Element extends HTMLElement> {
   }
 
   createElement(period: "mount" | "remount") {
-    debug(period);
+    debug(this._dev)(period);
     const element = document.createElement(this.type) as Element;
     this.element = element;
 
@@ -127,42 +142,126 @@ export default class HNode<T, Element extends HTMLElement> {
   }
 
   renderChildren() {
-    const children = !Array.isArray(this.children)
-      ? [this.children]
-      : this.children;
-    for (const child of children) {
-      if (child !== undefined) {
-        if (typeof child === "function") {
-          // 响应式
-          observerHelper.bind(
-            () => {
-              if (this.element) {
-                this.element.innerText = String(child());
+    if (this._builder && this.children === undefined) {
+      debug(this._dev)("patchRender");
+      this.patchRenderChildren(this._builder);
+    } else {
+      const children = !Array.isArray(this.children)
+        ? [this.children]
+        : this.children;
+      for (const child of children) {
+        if (child !== undefined) {
+          if (typeof child === "function") {
+            // 响应式
+            observerHelper.bind(
+              () => {
+                if (this.element) {
+                  this.element.innerText = String(child());
+                }
+              },
+              () => {
+                // 初始化
+                this.element!.innerText = String(child());
               }
-            },
-            () => {
-              // 初始化
-              this.element!.innerText = String(child());
-            }
-          );
-        } else if (child instanceof HNode) {
-          (child as HNode<unknown, Element>).mount(this);
-        } else {
-          this.element!.innerText = String(child);
+            );
+          } else if (child instanceof HNode) {
+            (child as HNode<unknown, Element>).mount(this);
+          } else {
+            this.element!.innerText = String(child);
+          }
         }
       }
     }
   }
 
   // TODO:对子组件数组实现 patch 更新
-  patchChildren() {
-    // TODO: diff children for reduce operation
-    // TODO: List 只处理删除，新增，顺序修改等
-    // TODO: optimize diff
-    if (this.element && this.status === "mounted") {
-      this.element!.innerHTML = "";
-      this.renderChildren();
-    }
+  patchRenderChildren(builder: ListChildrenBuilder<any, Element, T>) {
+    observerHelper.bind(
+      () => {
+        const newPatchDataSource = builder.data();
+        const newPatchChildren: HNode<T, Element>[] = this._prevPatchChildren;
+        const diffData = diff(
+          this._prevPatchDataSource,
+          newPatchDataSource,
+          (old, latest) => {
+            const oldIndex = this._prevPatchDataSource.findIndex(
+              (it) => it === old
+            );
+            const oldKey = builder.key(old, oldIndex);
+            const latestIndex = newPatchDataSource.findIndex(
+              (it) => it === latest
+            );
+            const latestKey = builder.key(latest, latestIndex);
+            return oldKey === latestKey;
+          }
+        );
+        // according to diffData to render children by patch
+        console.log(
+          "diffData",
+          this._prevPatchDataSource,
+          newPatchDataSource,
+          diffData
+        );
+        // TODO: remove child
+        diffData.removed.forEach((item) => {
+          // TODO: 找出被删除的数据的 key
+          const index = this._prevPatchDataSource.findIndex(
+            (it) => it === item
+          );
+          const key = builder.key(item, index);
+          // TODO: 通过 key 找出对应的 HNode
+          const child = this._prevPatchChildren.find((item) => {
+            return item._key === key;
+          });
+          if (child) {
+            child.unmount();
+            newPatchChildren.splice(index, 1);
+          }
+        });
+        diffData.added.forEach((item) => {
+          const index = newPatchDataSource.findIndex((it) => it === item);
+          const key = builder.key(item, index);
+          const child = builder.item(item, index);
+          child.index = index;
+          child._key = key;
+          child.mount(this);
+          newPatchChildren.splice(index, 0, child);
+        });
+        // TODO: 调整顺序
+        newPatchDataSource.forEach((item, index) => {
+          const key = builder.key(item, index);
+          const child = newPatchChildren.find((it) => it._key === key);
+          debug(this._dev)("sort", child, child?.index, index);
+          if (child && child.index !== undefined && child.index !== index) {
+            if (index === newPatchDataSource.length - 1) {
+              child.parentNode?.element?.appendChild(child.element!);
+            } else {
+              const afterElement = child.parentNode?.element?.childNodes[index];
+              child.parentNode?.element?.insertBefore(
+                child.element!,
+                afterElement!
+              );
+            }
+            child.index = index;
+
+            newPatchChildren.splice(child.index, 1);
+            newPatchChildren.splice(index, 0, child);
+          }
+        });
+        this._prevPatchDataSource = newPatchDataSource;
+        this._prevPatchChildren = newPatchChildren;
+      },
+      () => {
+        const newPatchDataSource = builder.data();
+        for (let [index, item] of newPatchDataSource.entries()) {
+          const child = builder.item(item, index);
+          child._key = builder.key(item, index);
+          child.index = index;
+          this._prevPatchChildren.push(child);
+          child.mount(this);
+        }
+      }
+    );
   }
 
   unmount() {

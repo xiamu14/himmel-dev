@@ -1,16 +1,29 @@
-import HNode, { HChildren } from "./HNode";
+import HNode from "./HNode";
 
-export default class ListNode<T, E extends HTMLElement> extends HNode<T, E> {
-  constructor(children?: (string | number | HNode<T, E>)[]) {
-    super(children as HChildren<T>);
+export class UlNode<T, E extends HTMLElement> extends HNode<T, E> {
+  constructor() {
+    super();
     this.type = "ul";
   }
 
   /**
    * @description forbidden override type of LinkNode
    */
-  as(type: "ol") {
-    this.type = type;
+  as() {
+    return this;
+  }
+}
+
+export class OlNode<T, E extends HTMLElement> extends HNode<T, E> {
+  constructor() {
+    super();
+    this.type = "ol";
+  }
+
+  /**
+   * @description forbidden override type of LinkNode
+   */
+  as() {
     return this;
   }
 }

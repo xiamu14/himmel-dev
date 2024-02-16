@@ -1,13 +1,10 @@
-export function warn(isDev: boolean = true, type: "warn" | "error" = "warn") {
+export function debug(
+  show: boolean = true,
+  type: "log" | "warn" | "error" = "log"
+) {
   return (...params: unknown[]) => {
-    isDev && console[type](...params);
+    show && console[type](...params);
   };
-}
-
-export function debug(...data: unknown[]) {
-  if (__DEV__) {
-    console.log(...data);
-  }
 }
 
 export function uniqueId() {

@@ -38,15 +38,11 @@ function Hello(name: string) {
       })
       .ref(getHelloRef),
     Link("test").href("https://www.baidu.com"),
-    Div(
-    // FIXME: get(dataState) 会出错
-      data.map((item) => {
-        return Div([P(item.nickname)]);
-      })
-    ),
-    // TODO: 实现 diff 方法，细颗粒度更新 dom
-    List(() => get(todoListState),(item,index) => Item(item)).className()
-
+    Ul().build({
+      data:()=>get(todoListState),
+      key:(item,index)=String(item),
+      item: (item)=>Li(item)
+    })
   ]);
 }
 function App() {
@@ -99,9 +95,8 @@ function sleep(second: number) {
 
 - [x] onMount; onWillMount; onUnmount; onWillUnmount;
 
-- [ ] Element meta data; diff algorithm (⭐️⭐️⭐️) [v1 refactor plan: HNode]
+- [x] Element meta data; diff algorithm (⭐️⭐️⭐️) [v1 refactor plan: HNode]
 - [ ] animation method
-- [ ] signal patch update ?
 
 - [x] full attribute
 - [x] full event function (proxy event)

@@ -25,7 +25,7 @@ class ObserverHelper {
   public bind<T>(observer: () => void, executor: () => T): T {
     this._observer = observer;
     const result = executor();
-    this.clear;
+    this.clear();
     return result;
   }
 }
