@@ -23,3 +23,11 @@ export type Hooks = {
   onUnmount?: () => void;
   onWillUnmount?: () => void;
 };
+
+export type UniqueId = string;
+export type Patch = {
+  add: UniqueId[];
+  remove: UniqueId[];
+  unChange: UniqueId[];
+  changed: UniqueId[];
+};

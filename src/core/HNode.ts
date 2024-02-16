@@ -7,8 +7,9 @@ import {
   NodeRef,
   SimpleAttributes,
   Style,
+  UniqueId,
 } from "./types";
-import { debug } from "./utils";
+import { debug, uniqueId } from "./utils";
 
 export function createNodeRef(): [{ node: NodeRef }, GetNodeRef] {
   const obj: { node: NodeRef } = {
@@ -29,6 +30,9 @@ export type HChildren<T> =
   | HNode<T, HTMLElement>
   | HNode<T, HTMLElement>[]
   | (() => string | number | boolean);
+
+export type ListChild<T, E extends HTMLElement> = string | number | HNode<T, E>;
+
 export default class HNode<T, Element extends HTMLElement> {
   type: string;
   status: HNodeStatus = "idle";
@@ -45,12 +49,22 @@ export default class HNode<T, Element extends HTMLElement> {
   };
   hooks: Hooks = {};
   events: Record<string, any> = {};
+  _key = uniqueId();
   getNodeRef?: GetNodeRef;
 
   _dev?: boolean = false;
 
   public dev() {
     this._dev = true;
+  }
+
+  public key(newKey: UniqueId) {
+    this._key = newKey;
+    return this;
+  }
+
+  public getKey() {
+    return this._key;
   }
 
   constructor(children?: HChildren<T>) {
@@ -137,6 +151,17 @@ export default class HNode<T, Element extends HTMLElement> {
           this.element!.innerText = String(child);
         }
       }
+    }
+  }
+
+  // TODO:对子组件数组实现 patch 更新
+  patchChildren() {
+    // TODO: diff children for reduce operation
+    // TODO: List 只处理删除，新增，顺序修改等
+    // TODO: optimize diff
+    if (this.element && this.status === "mounted") {
+      this.element!.innerHTML = "";
+      this.renderChildren();
     }
   }
 

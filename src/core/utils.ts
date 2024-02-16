@@ -9,3 +9,11 @@ export function debug(...data: unknown[]) {
     console.log(...data);
   }
 }
+
+export function uniqueId() {
+  return Math.round(Math.random() * 1000) + Date.now().toString(36);
+}
+
+export function insertAfter(newNode: HTMLElement, existingNode: HTMLElement) {
+  existingNode.parentNode?.insertBefore(newNode, existingNode.nextSibling);
+}

@@ -19,6 +19,7 @@
     "vite": "^5.0.12"
   },
   "dependencies": {
+    "fast-array-diff": "^1.1.0",
     "lodash.clonedeep": "^4.5.0"
   }
 }

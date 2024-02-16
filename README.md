@@ -45,7 +45,8 @@ function Hello(name: string) {
       })
     ),
     // TODO: 实现 diff 方法，细颗粒度更新 dom
-    List(()=> get(todoListState).(item)=>Item(item)).className()
+    List(() => get(todoListState),(item,index) => Item(item)).className()
+
   ]);
 }
 function App() {
@@ -121,3 +122,9 @@ function sleep(second: number) {
   - [ ] Input component;
 
 - [ ] ssr
+
+## 技术方案
+
+props 是否实现响应式？
+
+optimistic update : 乐观更新

@@ -1,35 +1,54 @@
-import HNode, { HChildren } from "./HNode";
+import { diff } from "fast-array-diff";
+import HNode, { HChildren, ListChild } from "./HNode";
 import ImgNode from "./ImgNode";
 import LinkNode from "./LinkNode";
 import ListNode from "./ListNode";
 import { observerHelper } from "./signal";
+import { UniqueId } from "./types";
 
 export function Div(children?: HChildren<string>) {
   return new HNode(children);
 }
 
-export function List<T>(
-  children?: HNode<T, HTMLElement>[] | (() => HNode<T, HTMLElement>[])
+export function List<T, I extends { key: UniqueId }, E extends HTMLElement>(
+  data: I[] | (() => I[]),
+  children: (item: I, index: number) => ListChild<T, E>
 ) {
-  let node: ListNode;
-
-  if (typeof children === "function") {
+  let node: ListNode<T, E>;
+  let prevData: I[] = [];
+  if (typeof data === "function") {
     node = observerHelper.bind(
       () => {
         // TODO: diff children for reduce operation
-        node.children = children();
+        const nextData = data();
+        const patch = diff(
+          prevData,
+          nextData,
+          (old, current) => old.key === current.key
+        );
+        console.log("patch", patch);
+        // diff prevData, nextData
+        // TODO: List 只处理删除，新增，顺序修改等
+        patch.removed.map((item) => {
+          const index = (node.children as ListChild<T, E>[]).findIndex((it) => {
+            if (it instanceof HNode) {
+              return it.getKey() === item.key;
+            }
+            return -1;
+          });
+        });
         // TODO: optimize diff
-        if (node.element && node.status === "mounted") {
-          node.element!.innerHTML = "";
-          node.renderChildren();
-        }
+        node.patchChildren();
+        prevData = nextData;
       },
       () => {
-        return new ListNode(children());
+        const dataSource = data();
+        prevData = dataSource;
+        return new ListNode(dataSource.map(children));
       }
     );
   } else {
-    node = new ListNode(children);
+    node = new ListNode<T, E>(data.map(children));
   }
 
   return node;
