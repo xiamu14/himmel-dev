@@ -91,8 +91,8 @@ export function Img(src: string) {
 }
 
 // 特殊
-class RootNode extends HNode<HTMLDivElement> {
-  constructor(container: HTMLDivElement) {
+class RootNode<E extends HTMLElement> extends HNode<E> {
+  constructor(container: E) {
     super();
     this.element = container;
     this.status = "mounted";
@@ -100,13 +100,11 @@ class RootNode extends HNode<HTMLDivElement> {
   }
 }
 
-export const createRoot = (
+export const createRoot = <E extends HTMLElement>(
   containerId: string,
-  Main: () => HNode<HTMLDivElement>
+  Main: () => HNode<E>
 ) => {
-  const containerElement = document.querySelector(
-    containerId
-  ) as HTMLDivElement;
+  const containerElement = document.querySelector(containerId) as HTMLElement;
   if (!containerElement) {
     throw new Error("no container, nothing render");
   }
