@@ -1,8 +1,8 @@
-import HNode from "./HNode";
+import HNode, { HChildren } from "./HNode";
 import { observerHelper } from "./signal";
 
 export default class LinkNode extends HNode<HTMLLinkElement> {
-  constructor(children?: string) {
+  constructor(children?: HChildren) {
     super(children);
     this.type = "a";
   }

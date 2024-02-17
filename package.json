@@ -9,13 +9,16 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.es.js"
+      "import": "./dist/index.es.js",
+      "types": "./dist/index.d.ts"
     },
     "./signal": {
-      "import": "./dist/signal.es.js"
+      "import": "./dist/signal.es.js",
+      "types": "./dist/signal.d.ts"
     },
     "./dom": {
-      "import": "./dist/dom.es.js"
+      "import": "./dist/dom.es.js",
+      "types": "./dist/dom.d.ts"
     }
   },
   "module": "./dist/index.es.js",

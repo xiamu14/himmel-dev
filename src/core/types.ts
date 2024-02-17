@@ -12,6 +12,7 @@ export type SimpleAttributes = {
   src?: string;
   target?: "_blank" | "_self" | "_parent" | "_top";
   alt?: string;
+  type?: string;
   contentEditable?: boolean;
 };
 
