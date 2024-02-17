@@ -49,12 +49,9 @@ jobs:
 
       - name: build & publish
         run: |
-          cp package.json ./lib/package.json
-          cd ./lib
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }} " > .npmrc
           echo "registry=https://registry.npmjs.org/" >> .npmrc
           echo "always-auth=true" >> .npmrc
-          cat .npmrc
           npm publish --access public
 
       - name: read package version
