@@ -8,7 +8,7 @@ export default defineConfig({
       include: [
         // the default
         // include js/ts files
-        "src/demo/**/*.ts",
+        "src/**/*.ts",
       ],
       // exclude files
       // exclude: []

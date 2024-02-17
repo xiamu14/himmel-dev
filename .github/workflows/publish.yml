@@ -43,15 +43,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - run: pnpm install
-
-      - run: pnpm build
+      - run: pnpm install -w
 
       - name: build & publish
         run: |
+          cd packages/core
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }} " > .npmrc
           echo "registry=https://registry.npmjs.org/" >> .npmrc
           echo "always-auth=true" >> .npmrc
+          npm run build
           npm publish --access public
 
       - name: read package version
@@ -68,4 +68,4 @@ jobs:
           WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
         with:
           msgtype: news
-          articles: '[{"title":"Himmel : 现代的前端框架","description":"v${{steps.version.outputs.value}}  发布成功 🎉","url":"https://github.com/xiamu14/himmel-dev","picurl":"https://t7.baidu.com/it/u=3039972918,1763345442&fm=193&f=GIF"}]'
+          articles: '[{"title":"Himmel : 现代的前端框架","description":"v${{steps.version.outputs.value}}  发布成功 🎉","url":"https://github.com/xiamu14/himmel-dev","picurl":"https://himmel-dev.zeabur.app/assets/himmel-logo-CzJ02f-0.svg"}]'

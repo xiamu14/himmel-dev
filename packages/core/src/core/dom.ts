@@ -110,3 +110,14 @@ export const createRoot = <E extends HTMLElement>(
   }
   Main().mount(new RootNode(containerElement));
 };
+
+export const Portal = <E extends HTMLElement, PE extends HTMLElement>(
+  node: HNode<E>,
+  mount: HNode<PE> | HTMLElement
+) => {
+  if (mount instanceof HNode) {
+    node.mount(mount);
+  } else {
+    node.mount(new RootNode(mount));
+  }
+};

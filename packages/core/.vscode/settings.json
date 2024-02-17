@@ -3,5 +3,5 @@
     "source.organizeImports": "explicit"
   },
   "cSpell.words": ["Himmel"],
-  "unocss.include": ["/packages/**/*.ts"]
+  "unocss.include": ["src/**/*.ts"]
 }

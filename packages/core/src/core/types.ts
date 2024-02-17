@@ -1,3 +1,5 @@
+import HNode from "./HNode";
+
 export type HNodeStatus = "idle" | "mounted" | "unmounted";
 export type Style = Partial<CSSStyleDeclaration>;
 export type Attributes = {
@@ -17,7 +19,7 @@ export type SimpleAttributes = {
 };
 
 export type NodeRef = HTMLElement | undefined;
-export type GetNodeRef = (ref: HTMLElement | undefined) => void;
+export type GetNodeRef<E extends HTMLElement> = (ref: HNode<E>) => void;
 export type Hooks = {
   onMount?: () => void;
   onWillMount?: () => void;

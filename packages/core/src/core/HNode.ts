@@ -6,20 +6,22 @@ import {
   GetNodeRef,
   HNodeStatus,
   Hooks,
-  NodeRef,
   SimpleAttributes,
   Style,
   UniqueId,
 } from "./types";
 import { debug, uniqueId } from "./utils";
 
-export function createNodeRef(): [{ node: NodeRef }, GetNodeRef] {
-  const obj: { node: NodeRef } = {
+export function createNodeRef<E extends HTMLElement>(): [
+  { node?: HNode<E> },
+  GetNodeRef<E>
+] {
+  const obj: { node?: HNode<E> } = {
     node: undefined,
   };
   return [
     obj,
-    (ref: HTMLElement | undefined) => {
+    (ref: HNode<E>) => {
       obj.node = ref;
     },
   ];
@@ -60,7 +62,6 @@ export default class HNode<E extends HTMLElement> {
   _prevPatchDataSource: unknown[] = [];
   _prevPatchChildren: HNode<E>[] = [];
   _builder: ListChildrenBuilder<any, E> | undefined;
-  getNodeRef?: GetNodeRef;
 
   _dev?: boolean = false;
 
@@ -114,7 +115,6 @@ export default class HNode<E extends HTMLElement> {
         const preNode = childNodes[this.index];
         this.parentNode.element!.insertBefore(this.element, preNode);
       }
-      this.getNodeRef?.(this.element);
       this.status = "mounted";
       this.hooks?.onMount?.();
     }
@@ -270,7 +270,6 @@ export default class HNode<E extends HTMLElement> {
       this.parentNode.element!.removeChild(this.element);
       this.status = "unmounted";
       this.element = undefined;
-      this.getNodeRef?.(undefined);
       this.hooks?.onUnmount?.();
     }
   }
@@ -327,8 +326,8 @@ export default class HNode<E extends HTMLElement> {
     this.type = type;
     return this;
   }
-  ref(fn: GetNodeRef) {
-    this.getNodeRef = fn;
+  ref(fn: GetNodeRef<E>) {
+    fn(this);
     return this;
   }
   hide(val: boolean | (() => boolean)) {

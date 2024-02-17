@@ -142,30 +142,28 @@ setTimeout(() => {
 - [x] Element meta data; diff algorithm (⭐️⭐️⭐️) [v1 refactor plan: HNode]
 - [ ] animation method
 
-- [ ] package build
+- [x] package build
 
-- [x] full attribute
-- [x] full event function (proxy event)
-- [ ] Portal
-- [ ] support svg （auto）
+- [ ] full attribute
+- [ ] full event function (proxy event)
+- [x] Portal
+- [x] monorepo packages
+- [ ] support svg
+- [ ] canvas component
+- [ ] Form & Input component
 
 - [ ] test case
 - [ ] benchmark
 
 - [ ] doc site
 - [ ] route
-- [ ] di-fetch with swr
-- [ ] starter template
+
+- [x] starter template
 
 - [ ] ui library
 
-  - [ ] Modal component;
-  - [ ] Input component;
+  - [x] Modal component;
 
+- [ ] di-fetch
+  - [ ] optimistic update
 - [ ] ssr
-
-## 技术方案
-
-props 是否实现响应式？
-
-optimistic update : 乐观更新

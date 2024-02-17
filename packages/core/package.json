@@ -1,0 +1,48 @@
+{
+  "name": "himmel",
+  "version": "0.0.2-alpha.3",
+  "description": "",
+  "type": "module",
+  "types": "./dist",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./signal": {
+      "import": "./dist/signal.es.js",
+      "types": "./dist/signal.d.ts"
+    },
+    "./dom": {
+      "import": "./dist/dom.es.js",
+      "types": "./dist/dom.d.ts"
+    }
+  },
+  "module": "./dist/index.es.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "rimraf dist && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "ben",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.9",
+    "@types/node": "^20.11.19",
+    "@unocss/preset-uno": "^0.58.5",
+    "renew-it": "^1.5.2",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3",
+    "unocss": "^0.58.5",
+    "vite": "^5.0.12",
+    "vite-plugin-dts": "^3.7.2"
+  },
+  "dependencies": {
+    "fast-array-diff": "^1.1.0",
+    "lodash.clonedeep": "^4.5.0"
+  }
+}
