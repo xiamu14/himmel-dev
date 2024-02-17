@@ -1,15 +1,13 @@
-import { Div, Text } from "../core/dom";
+import { List, Text } from "../core/dom";
 import { dispatch, get, signal } from "../core/signal";
 const todoListState = signal<string[]>([]);
 
 export default function TodoList() {
-  return Div()
-    .build({
-      data: () => get(todoListState),
-      key: (_) => _,
-      item: (item) => Text(item),
-    })
-    .dev();
+  return List({
+    data: () => get(todoListState),
+    key: (_) => _,
+    item: (item) => Text(item),
+  }).dev();
 }
 
 setTimeout(() => {

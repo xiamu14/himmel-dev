@@ -1,6 +1,6 @@
 import HNode from "./HNode";
 
-export class UlNode<T, E extends HTMLElement> extends HNode<T, E> {
+export class UlNode<E extends HTMLElement> extends HNode<E> {
   constructor() {
     super();
     this.type = "ul";
@@ -14,7 +14,7 @@ export class UlNode<T, E extends HTMLElement> extends HNode<T, E> {
   }
 }
 
-export class OlNode<T, E extends HTMLElement> extends HNode<T, E> {
+export class OlNode<E extends HTMLElement> extends HNode<E> {
   constructor() {
     super();
     this.type = "ol";

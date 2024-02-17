@@ -1,25 +1,36 @@
-import HNode, { HChildren } from "./HNode";
+import HNode, { HChildren, ListChildrenBuilder } from "./HNode";
 import ImgNode from "./ImgNode";
 import LinkNode from "./LinkNode";
-import { UlNode } from "./ListNode";
+import { OlNode, UlNode } from "./ListNode";
 
-export function Div(children?: HChildren<string>) {
-  return new HNode(children);
+export function Div(children?: HChildren) {
+  return new HNode<HTMLDivElement>(children);
 }
 
-export function Ul() {
-  const node = new UlNode();
-  return node;
+export function List<Item>(builder: ListChildrenBuilder<Item, HTMLDivElement>) {
+  const node = new HNode<HTMLDivElement>();
+
+  return node.build(builder);
 }
 
-export function Li(children?: HChildren<string>) {
+export function Ul<Item>(builder: ListChildrenBuilder<Item, HTMLUListElement>) {
+  const node = new UlNode<HTMLUListElement>();
+  return node.build(builder);
+}
+
+export function Ol<Item>(builder: ListChildrenBuilder<Item, HTMLOListElement>) {
+  const node = new OlNode<HTMLOListElement>();
+  return node.build(builder);
+}
+
+export function Li(children?: HChildren) {
   const node = new HNode(children);
   node.as("li");
   return node;
 }
 
-export function Text(children?: HChildren<string>) {
-  const node = new HNode(children);
+export function Text(children?: HChildren) {
+  const node = new HNode<HTMLParagraphElement>(children);
   node.as("p");
   return node;
 }
@@ -36,7 +47,7 @@ export function Img(src: string) {
 }
 
 // 特殊
-class RootNode extends HNode<unknown, HTMLElement> {
+class RootNode extends HNode<HTMLElement> {
   constructor(container: HTMLElement) {
     super();
     this.element = container;
@@ -47,7 +58,7 @@ class RootNode extends HNode<unknown, HTMLElement> {
 
 export const createRoot = (
   containerId: string,
-  Main: () => HNode<unknown, HTMLElement>
+  Main: () => HNode<HTMLElement>
 ) => {
   const containerElement = document.querySelector(containerId) as HTMLElement;
   if (!containerElement) {

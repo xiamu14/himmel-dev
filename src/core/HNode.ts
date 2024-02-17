@@ -25,31 +25,27 @@ export function createNodeRef(): [{ node: NodeRef }, GetNodeRef] {
   ];
 }
 
-export type ListChildrenBuilder<
-  Item extends unknown,
-  Element extends HTMLElement,
-  H
-> = {
+export type ListChildrenBuilder<Item extends unknown, E extends HTMLElement> = {
   data: () => Item[];
   key: (item: Item, index: number) => UniqueId;
-  item: (item: Item, index: number) => HNode<H, Element>;
+  item: (item: Item, index: number) => HNode<E>;
 };
 
-export type HChildren<T> =
+export type HChildren =
   | string
   | number
-  | HNode<T, HTMLElement>
-  | HNode<T, HTMLElement>[]
+  | HNode<HTMLElement>
+  | HNode<HTMLElement>[]
   | (() => string | number);
 
-export type ListChild<T, E extends HTMLElement> = string | number | HNode<T, E>;
+export type ListChild<E extends HTMLElement> = string | number | HNode<E>;
 
-export default class HNode<T, Element extends HTMLElement> {
+export default class HNode<E extends HTMLElement> {
   type: string;
   status: HNodeStatus = "idle";
-  children: HChildren<T> | undefined;
-  element: Element | undefined;
-  parentNode: HNode<unknown, HTMLElement> | undefined;
+  children: HChildren | undefined;
+  element: E | undefined;
+  parentNode: HNode<HTMLElement> | undefined;
   index: number | undefined = undefined; // 当前 Node 在父组件里的位置
   container: HTMLElement | undefined;
   attributes: Attributes = {
@@ -62,8 +58,8 @@ export default class HNode<T, Element extends HTMLElement> {
   events: Record<string, any> = {};
   private _key = uniqueId();
   private _prevPatchDataSource: unknown[] = [];
-  private _prevPatchChildren: HNode<T, Element>[] = [];
-  _builder: ListChildrenBuilder<any, Element, T> | undefined;
+  private _prevPatchChildren: HNode<E>[] = [];
+  _builder: ListChildrenBuilder<any, E> | undefined;
   getNodeRef?: GetNodeRef;
 
   private _dev?: boolean = false;
@@ -73,7 +69,7 @@ export default class HNode<T, Element extends HTMLElement> {
     return this;
   }
 
-  public build<Item>(builder: ListChildrenBuilder<Item, Element, T>) {
+  public build<Item>(builder: ListChildrenBuilder<Item, E>) {
     this._builder = builder;
     return this;
   }
@@ -82,14 +78,14 @@ export default class HNode<T, Element extends HTMLElement> {
     return this._key;
   }
 
-  constructor(children?: HChildren<T>) {
+  constructor(children?: HChildren) {
     this.type = "div";
     this.children = children;
   }
 
   createElement(period: "mount" | "remount") {
     debug(this._dev)(period);
-    const element = document.createElement(this.type) as Element;
+    const element = document.createElement(this.type) as E;
     this.element = element;
 
     // 处理 attributes
@@ -124,7 +120,7 @@ export default class HNode<T, Element extends HTMLElement> {
     }
   }
 
-  mount(parentNode: HNode<unknown, Element>) {
+  mount(parentNode: HNode<HTMLElement>) {
     this.parentNode = parentNode;
     // try to record the index
     if (this.parentNode.status === "mounted") {
@@ -165,7 +161,7 @@ export default class HNode<T, Element extends HTMLElement> {
               }
             );
           } else if (child instanceof HNode) {
-            (child as HNode<unknown, Element>).mount(this);
+            child.mount(this);
           } else {
             this.element!.innerText = String(child);
           }
@@ -175,11 +171,11 @@ export default class HNode<T, Element extends HTMLElement> {
   }
 
   // TODO:对子组件数组实现 patch 更新
-  patchRenderChildren(builder: ListChildrenBuilder<any, Element, T>) {
+  patchRenderChildren(builder: ListChildrenBuilder<any, E>) {
     observerHelper.bind(
       () => {
         const newPatchDataSource = builder.data();
-        const newPatchChildren: HNode<T, Element>[] = this._prevPatchChildren;
+        const newPatchChildren: HNode<E>[] = this._prevPatchChildren;
         const diffData = diff(
           this._prevPatchDataSource,
           newPatchDataSource,

@@ -1,7 +1,7 @@
 import HNode from "./HNode";
 import { observerHelper } from "./signal";
 
-export default class ImgNode extends HNode<string, HTMLImageElement> {
+export default class ImgNode extends HNode<HTMLImageElement> {
   constructor() {
     super();
     this.type = "img";
