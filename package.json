@@ -1,11 +1,27 @@
 {
-  "name": "himmel-dev",
+  "name": "himmel",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "type": "module",
+  "types": "./dist",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js"
+    },
+    "./signal": {
+      "import": "./dist/signal.es.js"
+    },
+    "./dom": {
+      "import": "./dist/dom.es.js"
+    }
+  },
+  "module": "./dist/index.es.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "rimraf dist && vite build",
     "preview": "vite preview"
   },
   "keywords": [],
@@ -13,10 +29,14 @@
   "license": "ISC",
   "devDependencies": {
     "@types/lodash.clonedeep": "^4.5.9",
+    "@types/node": "^20.11.19",
     "@unocss/preset-uno": "^0.58.5",
+    "renew-it": "^1.5.2",
+    "rimraf": "^5.0.5",
     "typescript": "^5.3.3",
     "unocss": "^0.58.5",
-    "vite": "^5.0.12"
+    "vite": "^5.0.12",
+    "vite-plugin-dts": "^3.7.2"
   },
   "dependencies": {
     "fast-array-diff": "^1.1.0",
