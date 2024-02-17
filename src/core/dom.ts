@@ -1,25 +1,15 @@
 import HNode, { HChildren, ListChildrenBuilder } from "./HNode";
 import ImgNode from "./ImgNode";
 import LinkNode from "./LinkNode";
-import { OlNode, UlNode } from "./ListNode";
 
 export function Div(children?: HChildren) {
   return new HNode<HTMLDivElement>(children);
 }
 
-export function List<Item>(builder: ListChildrenBuilder<Item, HTMLDivElement>) {
-  const node = new HNode<HTMLDivElement>();
-
-  return node.build(builder);
-}
-
-export function Ul<Item>(builder: ListChildrenBuilder<Item, HTMLUListElement>) {
-  const node = new UlNode<HTMLUListElement>();
-  return node.build(builder);
-}
-
-export function Ol<Item>(builder: ListChildrenBuilder<Item, HTMLOListElement>) {
-  const node = new OlNode<HTMLOListElement>();
+export function List<Item, E extends HTMLElement>(
+  builder: ListChildrenBuilder<Item, E>
+) {
+  const node = new HNode<E>();
   return node.build(builder);
 }
 

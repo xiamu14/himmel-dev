@@ -1,4 +1,4 @@
-import { List, Text } from "../core/dom";
+import { Li, List } from "../core/dom";
 import { dispatch, get, signal } from "../core/signal";
 const todoListState = signal<string[]>([]);
 
@@ -6,8 +6,10 @@ export default function TodoList() {
   return List({
     data: () => get(todoListState),
     key: (_) => _,
-    item: (item) => Text(item),
-  }).dev();
+    item: (item) => Li(item),
+  })
+    .dev()
+    .as("ul");
 }
 
 setTimeout(() => {

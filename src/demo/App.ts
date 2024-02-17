@@ -62,6 +62,7 @@ function Hello(name: string) {
       objectFit: "cover",
     }),
     TodoList(),
+    // Div(["0", "1", 2, 3]), // 毫无意义
   ])
     .className("flex flex-col justify-center items-center")
     .onClick(() => {

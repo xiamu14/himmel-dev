@@ -36,7 +36,7 @@ export type HChildren =
   | number
   | HNode<HTMLElement>
   | HNode<HTMLElement>[]
-  | (() => string | number);
+  | (() => string | number); // 响应式数组需要使用 builder 模式，支持 patch render
 
 export type ListChild<E extends HTMLElement> = string | number | HNode<E>;
 
@@ -325,6 +325,7 @@ export default class HNode<E extends HTMLElement> {
   }
   as(type: string) {
     this.type = type;
+    return this;
   }
   ref(fn: GetNodeRef) {
     this.getNodeRef = fn;

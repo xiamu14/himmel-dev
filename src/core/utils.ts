@@ -14,3 +14,7 @@ export function uniqueId() {
 export function insertAfter(newNode: HTMLElement, existingNode: HTMLElement) {
   existingNode.parentNode?.insertBefore(newNode, existingNode.nextSibling);
 }
+
+export function isObject<T>(data: unknown): data is T {
+  return Object.prototype.toString.call(data) === "[object Object]";
+}
