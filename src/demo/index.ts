@@ -1,5 +1,5 @@
 import "virtual:uno.css";
 import { createRoot } from "../core";
-import App from "./App";
+import { Img } from "../core/dom";
 
-createRoot("#root", App);
+createRoot("#root", () => Img(""));

@@ -56,13 +56,13 @@ export default class HNode<E extends HTMLElement> {
   };
   hooks: Hooks = {};
   events: Record<string, any> = {};
-  private _key = uniqueId();
-  private _prevPatchDataSource: unknown[] = [];
-  private _prevPatchChildren: HNode<E>[] = [];
+  _key = uniqueId();
+  _prevPatchDataSource: unknown[] = [];
+  _prevPatchChildren: HNode<E>[] = [];
   _builder: ListChildrenBuilder<any, E> | undefined;
   getNodeRef?: GetNodeRef;
 
-  private _dev?: boolean = false;
+  _dev?: boolean = false;
 
   public dev() {
     this._dev = true;
