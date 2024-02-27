@@ -25,10 +25,4 @@ export default class LinkNode extends HNode<HTMLLinkElement> {
     }
     return this;
   }
-  /**
-   * @description forbidden override type of LinkNode
-   */
-  as() {
-    return this;
-  }
 }

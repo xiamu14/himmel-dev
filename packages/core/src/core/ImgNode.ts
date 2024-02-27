@@ -21,10 +21,4 @@ export default class ImgNode extends HNode<HTMLImageElement> {
     }
     return this;
   }
-  /**
-   * @description forbidden override type of LinkNode
-   */
-  as() {
-    return this;
-  }
 }

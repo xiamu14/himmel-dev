@@ -59,7 +59,7 @@ importers:
   packages/demo:
     dependencies:
       himmel:
-        specifier: workspace:0.0.2-alpha.3
+        specifier: workspace:*
         version: link:../core
     devDependencies:
       '@unocss/preset-uno':

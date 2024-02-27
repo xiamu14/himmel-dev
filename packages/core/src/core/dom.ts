@@ -1,9 +1,14 @@
 import HNode, { HChildren, ListChildrenBuilder } from "./HNode";
 import ImgNode from "./ImgNode";
+import InputNode from "./InputNode";
 import LinkNode from "./LinkNode";
 
 export function Div(children?: HChildren) {
   return new HNode<HTMLDivElement>(children);
+}
+
+export function Input() {
+  return new InputNode();
 }
 
 export function List<Item, E extends HTMLElement>(
@@ -15,67 +20,68 @@ export function List<Item, E extends HTMLElement>(
 
 export function Li(children?: HChildren) {
   const node = new HNode(children);
-  node.as("li");
+
+  node.type = "li";
   return node;
 }
 
 export function Button(children?: HChildren) {
   const node = new HNode(children);
-  node.as("button");
+  node.type = "button";
   return node;
 }
 
 export function Text(children?: HChildren) {
   const node = new HNode<HTMLParagraphElement>(children);
-  node.as("p");
+  node.type = "p";
   return node;
 }
 
 export function Span(children?: HChildren) {
   const node = new HNode<HTMLSpanElement>(children);
-  node.as("span");
+  node.type = "span";
   return node;
 }
 
 export function H1(children?: HChildren) {
   const node = new HNode<HTMLHeadingElement>(children);
-  node.as("h1");
+  node.type = "h1";
   return node;
 }
 
 export function H2(children?: HChildren) {
   const node = new HNode<HTMLHeadingElement>(children);
-  node.as("h2");
+  node.type = "h2";
   return node;
 }
 
 export function H3(children?: HChildren) {
   const node = new HNode<HTMLHeadingElement>(children);
-  node.as("h3");
+  node.type = "h3";
   return node;
 }
 
 export function H4(children?: HChildren) {
   const node = new HNode<HTMLHeadingElement>(children);
-  node.as("h4");
+  node.type = "h4";
   return node;
 }
 
 export function H5(children?: HChildren) {
   const node = new HNode<HTMLHeadingElement>(children);
-  node.as("h5");
+  node.type = "h5";
   return node;
 }
 
 export function H6(children?: HChildren) {
   const node = new HNode<HTMLHeadingElement>(children);
-  node.as("h5");
+  node.type = "h5";
   return node;
 }
 
 export function Hr() {
   const node = new HNode<HTMLHRElement>();
-  node.as("hr");
+  node.type = "hr";
   return node;
 }
 

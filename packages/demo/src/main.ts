@@ -1,5 +1,5 @@
 import { createRoot } from "himmel";
-import { Button, Div, Img, Portal, Text } from "himmel/dom";
+import { Button, Div, H1, Img, Input, Portal, Text } from "himmel/dom";
 import { dispatch, get, signal } from "himmel/signal";
 import "virtual:uno.css";
 import himmelLogo from "./himmel-logo.svg";
@@ -7,22 +7,33 @@ import "./style.css";
 import viteLogo from "./typescript.svg";
 const countSignal = signal(0);
 const hideSignal = signal(true);
-
+const inputValueSignal = signal("");
 function App() {
   return Div([
     Div([
       Img(himmelLogo).className("logo").attrs({ alt: "himmel Logo" }),
       Img(viteLogo).className("logo").attrs({ alt: "TypeScript Logo" }),
     ]).className("flex gap-2 justify-center"),
-    Text("Himmel + TypeScript").as("h1"),
+    H1("Himmel + TypeScript"),
     Div(
-      Div(() => `count is ${get(countSignal)}`)
-        .as("button")
+      Button(() => `count is ${get(countSignal)}`)
         .attrs({ id: "counter" })
         .onClick(() => {
           dispatch(countSignal, (old) => old + 1);
         })
-    ).className("card"),
+    )
+      .className("card")
+      .attrs({ "data-xxx": "xxx" }),
+    Input()
+      .attrs({ type: "text", placeholder: "测试输入", "data-xxx": "xxx" })
+      .className(
+        "bg-gray-50 border border-gray-300 border-solid text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-2"
+      )
+      .onInput((event) => {
+        console.log(event.target.value);
+        dispatch(inputValueSignal, event.target.value);
+      }),
+    Text(() => get(inputValueSignal)),
     Button("show modal").onClick(() => {
       dispatch(hideSignal, false);
     }),

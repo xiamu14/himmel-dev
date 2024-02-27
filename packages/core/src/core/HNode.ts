@@ -101,9 +101,10 @@ export default class HNode<E extends HTMLElement> {
       value && this.element?.setAttribute(name, String(value));
     });
 
-    if (this.events.click) {
-      this.element.onclick = this.events.click;
-    }
+    Object.keys(this.events).forEach((key) => {
+      const handler = this.events[key];
+      this.element?.addEventListener(key, handler);
+    });
     // NOTE: create and append
     if (this.parentNode?.status === "mounted") {
       this.hooks?.onWillMount?.();
@@ -307,6 +308,14 @@ export default class HNode<E extends HTMLElement> {
     );
     return this;
   }
+  dataset(key: string, val: string | number | object) {
+    this.attributes.simpleAttrs = Object.assign(
+      {},
+      this.attributes.simpleAttrs,
+      { [`data-${key}`]: typeof val === "string" ? val : JSON.stringify(val) }
+    );
+    return this;
+  }
   style(val: Style | (() => Style)) {
     if (typeof val === "function") {
       observerHelper.bind(
@@ -322,10 +331,10 @@ export default class HNode<E extends HTMLElement> {
     }
     return this;
   }
-  as(type: string) {
-    this.type = type;
-    return this;
-  }
+  // as(type: string) {
+  //   this.type = type;
+  //   return this;
+  // }
   ref(fn: GetNodeRef<E>) {
     fn(this);
     return this;

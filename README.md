@@ -139,13 +139,14 @@ setTimeout(() => {
 
 - [x] onMount; onWillMount; onUnmount; onWillUnmount;
 
-- [x] Element meta data; diff algorithm (⭐️⭐️⭐️) [v1 refactor plan: HNode]
+- [x] Element meta data; diff algorithm (⭐️⭐️⭐️) [v1 refactor plan:HNode]
+- [ ] support more attributes on Node extends HNode [v1 refactor plan:HNode]
+  - [ ] full attribute
+  - [ ] full event function (proxy event)
 - [ ] animation method
 
 - [x] package build
 
-- [ ] full attribute
-- [ ] full event function (proxy event)
 - [x] Portal
 - [x] monorepo packages
 - [ ] support svg
