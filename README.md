@@ -1,3 +1,9 @@
+## Documentation
+
+For detailed documentation, including API reference, guides, and contribution information, please see our [Full Documentation](./docs/index.md).
+
+---
+
 ```ts
 import { createNodeRef } from "../core";
 import { Div, Img, Link, Text } from "../core/dom";
