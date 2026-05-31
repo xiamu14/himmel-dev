@@ -1,9 +1,8 @@
-export function debug(
-  show: boolean = true,
-  type: "log" | "warn" | "error" = "log"
-) {
+export function debug(show: boolean = true, type: "log" | "warn" | "error" = "log") {
   return (...params: unknown[]) => {
-    show && console[type](...params);
+    if (show) {
+      console[type](...params);
+    }
   };
 }
 

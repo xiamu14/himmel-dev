@@ -19,6 +19,7 @@ export default defineConfig({
   plugins: [
     // UnoCSS(),
     dts({
+      entryRoot: "src/core",
       insertTypesEntry: true,
       rollupTypes: true,
     }),

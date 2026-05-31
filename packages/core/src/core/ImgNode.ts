@@ -10,11 +10,13 @@ export default class ImgNode extends HNode<HTMLImageElement> {
     if (typeof val === "function") {
       observerHelper.bind(
         () => {
-          this.element && this.element.setAttribute("src", val());
+          if (this.element) {
+            this.element.setAttribute("src", val());
+          }
         },
         () => {
           this.attributes.simpleAttrs.src = val();
-        }
+        },
       );
     } else {
       this.attributes.simpleAttrs.src = val;

@@ -12,10 +12,7 @@ import {
 } from "./types";
 import { debug, uniqueId } from "./utils";
 
-export function createNodeRef<E extends HTMLElement>(): [
-  { node?: HNode<E> },
-  GetNodeRef<E>
-] {
+export function createNodeRef<E extends HTMLElement>(): [{ node?: HNode<E> }, GetNodeRef<E>] {
   const obj: { node?: HNode<E> } = {
     node: undefined,
   };
@@ -90,15 +87,18 @@ export default class HNode<E extends HTMLElement> {
     this.element = element;
 
     // 处理 attributes
-    this.attributes.class &&
+    if (this.attributes.class) {
       this.element.classList.add(...this.attributes.class.split(" "));
+    }
 
     // 处理 style
     Object.assign(this.element.style, this.attributes.style);
 
     Object.keys(this.attributes.simpleAttrs).forEach((name) => {
       const value = this.attributes.simpleAttrs[name as keyof SimpleAttributes];
-      value && this.element?.setAttribute(name, String(value));
+      if (value) {
+        this.element?.setAttribute(name, String(value));
+      }
     });
 
     Object.keys(this.events).forEach((key) => {
@@ -143,9 +143,7 @@ export default class HNode<E extends HTMLElement> {
       debug(this._dev)("patchRender");
       this.patchRenderChildren(this._builder);
     } else {
-      const children = !Array.isArray(this.children)
-        ? [this.children]
-        : this.children;
+      const children = !Array.isArray(this.children) ? [this.children] : this.children;
       for (const child of children) {
         if (child !== undefined) {
           if (typeof child === "function") {
@@ -159,7 +157,7 @@ export default class HNode<E extends HTMLElement> {
               () => {
                 // 初始化
                 this.element!.innerText = String(child());
-              }
+              },
             );
           } else if (child instanceof HNode) {
             child.mount(this);
@@ -177,34 +175,18 @@ export default class HNode<E extends HTMLElement> {
       () => {
         const newPatchDataSource = builder.data();
         const newPatchChildren: HNode<E>[] = this._prevPatchChildren;
-        const diffData = diff(
-          this._prevPatchDataSource,
-          newPatchDataSource,
-          (old, latest) => {
-            const oldIndex = this._prevPatchDataSource.findIndex(
-              (it) => it === old
-            );
-            const oldKey = builder.key(old, oldIndex);
-            const latestIndex = newPatchDataSource.findIndex(
-              (it) => it === latest
-            );
-            const latestKey = builder.key(latest, latestIndex);
-            return oldKey === latestKey;
-          }
-        );
+        const diffData = diff(this._prevPatchDataSource, newPatchDataSource, (old, latest) => {
+          const oldIndex = this._prevPatchDataSource.findIndex((it) => it === old);
+          const oldKey = builder.key(old, oldIndex);
+          const latestIndex = newPatchDataSource.findIndex((it) => it === latest);
+          const latestKey = builder.key(latest, latestIndex);
+          return oldKey === latestKey;
+        });
         // according to diffData to render children by patch
-        console.log(
-          "diffData",
-          this._prevPatchDataSource,
-          newPatchDataSource,
-          diffData
-        );
         // TODO: remove child
         diffData.removed.forEach((item) => {
           // TODO: 找出被删除的数据的 key
-          const index = this._prevPatchDataSource.findIndex(
-            (it) => it === item
-          );
+          const index = this._prevPatchDataSource.findIndex((it) => it === item);
           const key = builder.key(item, index);
           // TODO: 通过 key 找出对应的 HNode
           const child = this._prevPatchChildren.find((item) => {
@@ -234,10 +216,7 @@ export default class HNode<E extends HTMLElement> {
               child.parentNode?.element?.appendChild(child.element!);
             } else {
               const afterElement = child.parentNode?.element?.childNodes[index];
-              child.parentNode?.element?.insertBefore(
-                child.element!,
-                afterElement!
-              );
+              child.parentNode?.element?.insertBefore(child.element!, afterElement!);
             }
             child.index = index;
 
@@ -257,16 +236,13 @@ export default class HNode<E extends HTMLElement> {
           this._prevPatchChildren.push(child);
           child.mount(this);
         }
-      }
+        this._prevPatchDataSource = newPatchDataSource;
+      },
     );
   }
 
   unmount() {
-    if (
-      this.parentNode?.status === "mounted" &&
-      this.element &&
-      this.status === "mounted"
-    ) {
+    if (this.parentNode?.status === "mounted" && this.element && this.status === "mounted") {
       this.hooks?.onWillUnmount?.();
       this.parentNode.element!.removeChild(this.element);
       this.status = "unmounted";
@@ -285,7 +261,7 @@ export default class HNode<E extends HTMLElement> {
       observerHelper.bind(
         (old?: string) => {
           if (old) {
-            [...old.split(" ")].forEach((it) => {
+            old.split(" ").forEach((it) => {
               this.element?.classList.remove(it);
             });
           }
@@ -293,7 +269,7 @@ export default class HNode<E extends HTMLElement> {
         },
         () => {
           this.attributes.class = val();
-        }
+        },
       );
     } else {
       this.attributes.class = val;
@@ -301,30 +277,26 @@ export default class HNode<E extends HTMLElement> {
     return this;
   }
   attrs(simpleAttrs: SimpleAttributes) {
-    this.attributes.simpleAttrs = Object.assign(
-      {},
-      this.attributes.simpleAttrs,
-      simpleAttrs
-    );
+    this.attributes.simpleAttrs = Object.assign({}, this.attributes.simpleAttrs, simpleAttrs);
     return this;
   }
   dataset(key: string, val: string | number | object) {
-    this.attributes.simpleAttrs = Object.assign(
-      {},
-      this.attributes.simpleAttrs,
-      { [`data-${key}`]: typeof val === "string" ? val : JSON.stringify(val) }
-    );
+    this.attributes.simpleAttrs = Object.assign({}, this.attributes.simpleAttrs, {
+      [`data-${key}`]: typeof val === "string" ? val : JSON.stringify(val),
+    });
     return this;
   }
   style(val: Style | (() => Style)) {
     if (typeof val === "function") {
       observerHelper.bind(
         () => {
-          this.element && Object.assign(this.element, val());
+          if (this.element) {
+            Object.assign(this.element.style, val());
+          }
         },
         () => {
           this.attributes.style = val();
-        }
+        },
       );
     } else {
       this.attributes.style = val;
@@ -343,11 +315,15 @@ export default class HNode<E extends HTMLElement> {
     if (typeof val === "function") {
       observerHelper.bind(
         () => {
-          val() ? this.unmount() : this.remount();
+          if (val()) {
+            this.unmount();
+          } else {
+            this.remount();
+          }
         },
         () => {
           this.attributes.hide = val();
-        }
+        },
       );
     } else {
       this.attributes.hide = val;

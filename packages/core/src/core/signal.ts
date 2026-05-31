@@ -4,7 +4,7 @@ type Signal<T> = {
   val: T;
   prev: T;
   subscribers: Set<(old?: T) => void>;
-  deriveKey?: Symbol;
+  deriveKey?: symbol;
 };
 type Observer = (() => void) | undefined;
 
@@ -43,7 +43,7 @@ export function signal<T>(initValue: T) {
     set(
       target: Signal<T>,
       prop: string | symbol,
-      newValue: any
+      newValue: any,
       // receiver: string
     ) {
       if (prop === "prev") {
@@ -85,7 +85,7 @@ export function get<T>(signal: Signal<T>) {
 export function dispatch<T extends boolean | string | number | object>(
   signal: Signal<T>,
   val: T | ((prev: T) => T) | ((prev: T) => Promise<T>),
-  deriveKey?: Symbol
+  deriveKey?: symbol,
 ) {
   // console.log(deriveKey, signal);
   if (!deriveKey || (deriveKey && signal.deriveKey === deriveKey)) {
@@ -109,9 +109,7 @@ export function effect(fn: () => void | Promise<void>) {
   });
 }
 
-export function derive<T extends boolean | string | number | object>(
-  fn: () => T
-) {
+export function derive<T extends boolean | string | number | object>(fn: () => T) {
   const deriveKey = Symbol("deriveKey");
   const derivedSignal = observerHelper.bind(
     () => {
@@ -122,7 +120,7 @@ export function derive<T extends boolean | string | number | object>(
       const newDerivedSignal = signal(fn());
       newDerivedSignal.deriveKey = deriveKey;
       return newDerivedSignal;
-    }
+    },
   );
 
   return derivedSignal;

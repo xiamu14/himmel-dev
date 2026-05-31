@@ -1,7 +1,7 @@
 import HNode from "./HNode";
 import { HTMLInputTypeAttribute } from "./htmlType";
 import { HTMLInputEvent, SimpleAttributes } from "./types";
-type Attrs = Omit<SimpleAttributes, "id"> & {
+type Attrs = SimpleAttributes & {
   type?: HTMLInputTypeAttribute;
   placeholder?: string;
   value?: string;
@@ -12,11 +12,7 @@ export default class InputNode extends HNode<HTMLInputElement> {
     this.type = "input";
   }
   attrs(simpleAttrs: Attrs) {
-    this.attributes.simpleAttrs = Object.assign(
-      {},
-      this.attributes.simpleAttrs,
-      simpleAttrs
-    );
+    this.attributes.simpleAttrs = Object.assign({}, this.attributes.simpleAttrs, simpleAttrs);
     return this;
   }
   onInput(handler: (event: HTMLInputEvent) => void) {

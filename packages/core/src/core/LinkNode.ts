@@ -14,11 +14,13 @@ export default class LinkNode extends HNode<HTMLLinkElement> {
       // this.attributes.href = val();
       observerHelper.bind(
         () => {
-          this.element && this.element.setAttribute("href", val());
+          if (this.element) {
+            this.element.setAttribute("href", val());
+          }
         },
         () => {
           this.attributes.simpleAttrs.href = val();
-        }
+        },
       );
     } else {
       this.attributes.simpleAttrs.href = val;

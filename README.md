@@ -1,5 +1,10 @@
 # Himmel
 
+[![npm version](https://img.shields.io/npm/v/himmel.svg)](https://www.npmjs.com/package/himmel)
+[![npm downloads](https://img.shields.io/npm/dm/himmel.svg)](https://www.npmjs.com/package/himmel)
+[![license](https://img.shields.io/npm/l/himmel.svg)](https://github.com/xiamu14/himmel-dev/blob/main/LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-ready-3178c6.svg)](https://www.typescriptlang.org/)
+
 Himmel is a small UI runtime for AI-friendly interfaces.
 
 It is not trying to become another React. React already has a mature app ecosystem. Himmel focuses on small, readable, easy-to-review UI code for internal tools, plugin panels, dashboards, demos, and embeddable widgets.
@@ -101,6 +106,14 @@ Animation is only a runtime capability requirement in v1. The runtime should mak
 
 ## Example
 
+Install from npm:
+
+```bash
+bun add himmel
+```
+
+Use Himmel in a TypeScript app:
+
 ```ts
 import { createRoot } from "himmel";
 import { Button, Div, Text } from "himmel/dom";
@@ -152,9 +165,9 @@ setTimeout(() => {
 ## Development
 
 ```bash
-pnpm install
-pnpm -r --filter=himmel run build
-pnpm -r --filter=demo run dev
+bun install
+bun run build
+bun run demo:dev
 ```
 
 ## Packages

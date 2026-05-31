@@ -63,6 +63,55 @@ h1 {
   color: #888;
 }
 
+.todo-panel {
+  margin: 2rem auto;
+  max-width: 34rem;
+  text-align: left;
+}
+
+.todo-panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+}
+
+.todo-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.todo-input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+}
+
+.todo-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.todo-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+}
+
+.todo-title {
+  margin: 0;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;

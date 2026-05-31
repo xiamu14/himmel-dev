@@ -5,6 +5,11 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    "paths": {
+      "himmel": ["../core/src/core/index.ts"],
+      "himmel/dom": ["../core/src/core/dom.ts"],
+      "himmel/signal": ["../core/src/core/signal.ts"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",

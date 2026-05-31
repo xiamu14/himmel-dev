@@ -11,9 +11,7 @@ export function Input() {
   return new InputNode();
 }
 
-export function List<Item, E extends HTMLElement>(
-  builder: ListChildrenBuilder<Item, E>
-) {
+export function List<Item, E extends HTMLElement>(builder: ListChildrenBuilder<Item, E>) {
   const node = new HNode<E>();
   return node.build(builder);
 }
@@ -106,10 +104,7 @@ class RootNode<E extends HTMLElement> extends HNode<E> {
   }
 }
 
-export const createRoot = <E extends HTMLElement>(
-  containerId: string,
-  Main: () => HNode<E>
-) => {
+export const createRoot = <E extends HTMLElement>(containerId: string, Main: () => HNode<E>) => {
   const containerElement = document.querySelector(containerId) as HTMLElement;
   if (!containerElement) {
     throw new Error("no container, nothing render");
@@ -119,7 +114,7 @@ export const createRoot = <E extends HTMLElement>(
 
 export const Portal = <E extends HTMLElement, PE extends HTMLElement>(
   node: HNode<E>,
-  mount: HNode<PE> | HTMLElement
+  mount: HNode<PE> | HTMLElement,
 ) => {
   if (mount instanceof HNode) {
     node.mount(mount);

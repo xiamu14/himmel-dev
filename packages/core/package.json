@@ -1,12 +1,31 @@
 {
   "name": "himmel",
-  "version": "0.0.2-alpha.4",
-  "description": "",
-  "type": "module",
-  "types": "./dist",
+  "version": "0.0.2-alpha.6",
+  "description": "A small TypeScript UI runtime for AI-friendly interfaces.",
+  "keywords": [
+    "dom",
+    "runtime",
+    "signals",
+    "typescript",
+    "ui"
+  ],
+  "homepage": "https://github.com/xiamu14/himmel-dev#readme",
+  "bugs": {
+    "url": "https://github.com/xiamu14/himmel-dev/issues"
+  },
+  "license": "ISC",
+  "author": "ben",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiamu14/himmel-dev.git",
+    "directory": "packages/core"
+  },
   "files": [
     "dist"
   ],
+  "type": "module",
+  "module": "./dist/index.es.js",
+  "types": "./dist",
   "exports": {
     ".": {
       "import": "./dist/index.es.js",
@@ -21,28 +40,26 @@
       "types": "./dist/dom.d.ts"
     }
   },
-  "module": "./dist/index.es.js",
   "scripts": {
     "dev": "vite",
     "build": "rimraf dist && vite build",
-    "preview": "vite preview"
-  },
-  "keywords": [],
-  "author": "ben",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/lodash.clonedeep": "^4.5.9",
-    "@types/node": "^20.11.19",
-    "@unocss/preset-uno": "^0.58.5",
-    "renew-it": "^1.5.2",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.3.3",
-    "unocss": "^0.58.5",
-    "vite": "^5.0.12",
-    "vite-plugin-dts": "^3.7.2"
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "release": "renew-it"
   },
   "dependencies": {
     "fast-array-diff": "^1.1.0",
     "lodash.clonedeep": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.9",
+    "@types/node": "^25.9.1",
+    "@unocss/preset-uno": "^66.7.0",
+    "renew-it": "^1.5.5",
+    "rimraf": "^6.1.3",
+    "typescript": "^6.0.3",
+    "unocss": "^66.7.0",
+    "vite": "^8.0.14",
+    "vite-plugin-dts": "^5.0.1"
   }
 }
