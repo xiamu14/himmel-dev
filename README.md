@@ -1,170 +1,169 @@
+# Himmel
+
+Himmel is a small UI runtime for AI-friendly interfaces.
+
+It is not trying to become another React. React already has a mature app ecosystem. Himmel focuses on small, readable, easy-to-review UI code for internal tools, plugin panels, dashboards, demos, and embeddable widgets.
+
+The core idea is a direct TypeScript DSL:
+
 ```ts
-import { createNodeRef } from "../core";
-import { Div, Img, Link, Text } from "../core/dom";
-import { dispatch, get, signal } from "../core/signal";
-import TodoList from "./TodoList";
-import "./demo.css";
-
-const hideState = signal(true);
-const theme = signal("black");
-const name = signal("world");
-const [helloRef, getHelloRef] = createNodeRef();
-
-function Hello(name: string) {
-  return Div([
-    Link("Baidu")
-      .href("https://www.baidu.com")
-      .className("mb-2")
-      .attrs({ target: "_blank" }),
-    Text("hello " + name)
-      .className(
-        () =>
-          `text-blue p-20px font-bold text-xl flex justify-center ${get(theme)}`
-      )
-      .ref(getHelloRef)
-      .hide(() => get(hideState))
-      .onWillMount(() => {
-        console.log(
-          "%c willMount",
-          "color:white;background: #18a0f1;padding:4px",
-          "",
-          helloRef
-        );
-      })
-      .onMount(() => {
-        console.log(
-          "%c mount",
-          "color:white;background: #18a0f1;padding:4px",
-          helloRef
-        );
-      })
-      .onWillUnmount(() => {
-        console.log(
-          "%c willUnmount",
-          "color:white;background: #18a0f1;padding:4px",
-          helloRef
-        );
-      })
-      .onUnmount(() => {
-        console.log(
-          "%c unmount",
-          "color:white;background: #18a0f1;padding:4px",
-          "",
-          helloRef
-        );
-      })
-      .attrs({ contentEditable: true }),
-
-    Img(
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKcUURmHtvXIKSfWXWCCvzPJvT30o5nsV7xZJSvBDqHw&s"
-    ).style({
-      width: "180px",
-      height: "200px",
-      objectFit: "cover",
-    }),
-    TodoList(),
-    // Div(["0", "1", 2, 3]), // 毫无意义
-  ])
-    .className("flex flex-col justify-center items-center")
-    .onClick(() => {
-      console.log("click", get(theme));
-    });
-}
-
-export default function App() {
-  return Div([Hello("你好")]);
-}
-
-setTimeout(() => {
-  dispatch(hideState, false);
-  dispatch(theme, () => "light");
-}, 3000);
-
-dispatch(name, async () => {
-  await sleep(3);
-  return "John";
-});
-
-function sleep(second: number) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("");
-    }, second * 1000);
-  });
-}
+Div([
+  Text(() => get(title)),
+  Button("Run").onClick(runTask),
+]).className("panel");
 ```
 
-```ts TodoList.ts
-import { Li, List } from "../core/dom";
-import { dispatch, get, signal } from "../core/signal";
-const todoListState = signal<string[]>([]);
+## Goals
 
-export default function TodoList() {
+- Make UI code easy for AI to generate and modify.
+- Keep generated code readable for developers.
+- Keep the runtime small and predictable.
+- Prefer explicit lifecycle events over hidden conventions.
+- Build stable primitives before building ecosystem features.
+
+## Where Himmel Fits
+
+Himmel is designed for small UI surfaces where clarity matters more than ecosystem size.
+
+Good fits:
+
+- agent-generated UI
+- plugin panels
+- internal tools
+- small dashboards
+- workflow widgets
+- demos and prototypes
+- embeddable widgets inside a larger product
+
+These interfaces usually need a few clear states, a small amount of interaction, and predictable lifecycle behavior. They do not need a full app framework, a large component ecosystem, or a React-compatible runtime.
+
+Himmel should optimize for four things:
+
+- AI can write it with fewer hidden rules.
+- Developers can review it quickly.
+- Runtime behavior is explicit and easy to trace.
+- The generated UI can be tested with simple examples.
+
+Himmel is not the best choice for large product apps that need routing, data frameworks, deep design system integration, large third-party component ecosystems, or years of existing React investment.
+
+## Non-goals
+
+- Himmel is not a full React replacement.
+- Himmel does not embed the React runtime.
+- Himmel does not run React components.
+- Himmel v1 does not provide an official animation API.
+- React to Himmel codemod is a later v3 topic, not a v1 goal.
+
+See [ROADMAP.md](./ROADMAP.md) for the current product direction.
+
+## Current Status
+
+Himmel is currently an early runtime prototype.
+
+Implemented or partially implemented:
+
+- DOM node DSL
+- signal / get / dispatch
+- derived signal
+- async dispatch
+- event binding
+- image and link nodes
+- lifecycle events
+- List patch rendering
+- Portal
+- Vite package build
+- demo package
+
+Still needed for v1:
+
+- stable attributes and events
+- form/input behavior
+- SVG primitives
+- canvas primitive
+- runtime tests
+- List patch tests
+- lifecycle and cleanup tests
+- docs and examples for the v1 scenarios
+
+## v1 Scope
+
+v1 should prove that Himmel can build 7 small UI scenarios reliably:
+
+1. Counter
+2. Form
+3. Todo/List
+4. Modal/Portal
+5. Async data view
+6. SVG
+7. Canvas
+
+Animation is only a runtime capability requirement in v1. The runtime should make third-party animation libraries possible through stable `ref`, `onMount`, `onUnmount`, `className`, `style`, and `hide/remount` behavior. Himmel should not design an animation adapter before real demos prove the shape.
+
+## Example
+
+```ts
+import { createRoot } from "himmel";
+import { Button, Div, Text } from "himmel/dom";
+import { dispatch, get, signal } from "himmel/signal";
+
+const count = signal(0);
+
+function App() {
+  return Div([
+    Text(() => `count is ${get(count)}`),
+    Button("Add").onClick(() => {
+      dispatch(count, (value) => value + 1);
+    }),
+  ]).className("panel");
+}
+
+createRoot("#app", App);
+```
+
+## List Example
+
+```ts
+import { Li, List } from "himmel/dom";
+import { dispatch, get, signal } from "himmel/signal";
+
+const todoList = signal<string[]>([]);
+
+export function TodoList() {
   return List({
-    data: () => get(todoListState),
-    key: (_) => _,
+    data: () => get(todoList),
+    key: (item) => item,
     item: (item) => Li(item),
-  })
-    .dev()
-    .as("ul");
+  });
 }
 
 setTimeout(() => {
-  dispatch(todoListState, ["闲"]);
+  dispatch(todoList, ["learn"]);
 }, 1000);
 
 setTimeout(() => {
-  dispatch(todoListState, ["闲", "云"]);
+  dispatch(todoList, ["learn", "build"]);
 }, 3000);
 
 setTimeout(() => {
-  dispatch(todoListState, ["云", "闲"]);
+  dispatch(todoList, ["build", "learn"]);
 }, 6000);
 ```
 
-## Bug
+## Development
 
-- [x] replace when the reactive value is updated.
-- [x] fix the bug caused by observer not clear.
+```bash
+pnpm install
+pnpm -r --filter=himmel run build
+pnpm -r --filter=demo run dev
+```
 
-## Feature
+## Packages
 
-- [x] support async function
-- [x] bind event; proxy event
-- [x] Image component
-- [x] support unocss
-- [x] use vite
-- [x] support array; List and Item component
-- [x] derive and listen multiple signal (⭐️⭐️⭐️)
+- `packages/core`: the `himmel` runtime package.
+- `packages/demo`: Vite demo app.
 
-- [x] onMount; onWillMount; onUnmount; onWillUnmount;
+## Future Direction
 
-- [x] Element meta data; diff algorithm (⭐️⭐️⭐️) [v1 refactor plan:HNode]
-- [ ] support more attributes on Node extends HNode [v1 refactor plan:HNode]
-  - [ ] full attribute
-  - [ ] full event function (proxy event)
-- [ ] animation method
+v2 should focus on AI generation experience: starter, playground, examples, diagnostics, cookbook docs, and API constraints that help AI generate correct code.
 
-- [x] package build
-
-- [x] Portal
-- [x] monorepo packages
-- [ ] support svg
-- [ ] canvas component
-- [ ] Form & Input component
-
-- [ ] test case
-- [ ] benchmark
-
-- [ ] doc site
-- [ ] route
-
-- [x] starter template
-
-- [ ] ui library
-
-  - [x] Modal component;
-
-- [ ] di-fetch
-  - [ ] optimistic update
-- [ ] ssr
+v3 or later can explore React to Himmel codemod. That work should be transparent, debuggable, and verifiable. It should convert only statically understandable React/JSX subsets into plain Himmel source code, without embedding React runtime.
