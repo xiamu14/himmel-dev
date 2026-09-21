@@ -1,3 +1,5 @@
+
+
 # Himmel
 
 [![npm version](https://img.shields.io/npm/v/himmel.svg)](https://www.npmjs.com/package/himmel)
@@ -106,7 +108,7 @@ Animation is only a runtime capability requirement in v1. The runtime should mak
 
 ## Example
 
-Install from npm:
+Install with Bun:
 
 ```bash
 bun add himmel
